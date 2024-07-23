@@ -94,7 +94,7 @@ input {
     }
     &#id_submitbutton,
     &#id_submitbutton2 {
-        background: $secondary;
+        background: $primary;
         border: 0;
         text-shadow: none;
         &:hover,
@@ -148,7 +148,7 @@ input {
         font-family: Arial, Helvetica, sans-serif;
         color: $white;
         text-shadow: none;
-        background: $primary;
+        background: $secondary;
         padding: 0 16px;
         border: 0;
         box-shadow: none;

@@ -1,44 +1,82 @@
-# Sai Shiko Theme #
+# Academi V4.0 source files
 
-TODO Describe the plugin shortly here.
+Academi - a responsive moodle theme developed by LMSACE
 
-TODO Provide more detailed description here.
+<div class="content">
+<div class="read-me">
 
-## Installing via uploaded ZIP file ##
+<h3>About Academi Moodle theme</h3>
 
-1. Log in to your Moodle site as an admin and go to _Site administration >
-   Plugins > Install plugins_.
-2. Upload the ZIP file with the plugin code. You should only be prompted to add
-   extra details if your plugin type is not automatically detected.
-3. Check the plugin validation report and finish the installation.
+<p>Academi is a professional responsive Moodle theme. It will make your online moodle portal stand out from the crowd! </p>
 
-## Installing manually ##
+<ul>
+<li>Theme Demo URL : <a href="https://lmsacelab.com/m42/?theme=academi">Moodle Academi Theme</a></li>
 
-The plugin can be also installed by putting the contents of this directory to
+<li>Theme Version : &nbsp; 4.4.1 </li>
 
-    {your/moodle/dirroot}/theme/academi
+<li>Relesed on : &nbsp; 5 Jun 2024</li>
 
-Afterwards, log in to your Moodle site as an admin and go to _Site administration >
-Notifications_ to complete the installation.
+<li>Authors : &nbsp; ColoredCow Team</li>
 
-Alternatively, you can run
+<li>Copyright &copy; 2015 onwards <a href="http://www.lmsace.com">www.lmsace.com</a></li>
 
-    $ php admin/cli/upgrade.php
+</ul>
 
-to complete the installation from the command line.
+<h3>Supported moodle versions</h3>
 
-## License ##
+<p>Compatible with Moodle 4.0 </p>
 
-2024 ColoredCow 
+<h3>Supported browsers</h3>
 
-This program is free software: you can redistribute it and/or modify it under
-the terms of the GNU General Public License as published by the Free Software
-Foundation, either version 3 of the License, or (at your option) any later
-version.
+<p>IE9+ <br /><br />
+Recent versions of all modern browsers
+</p>
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+<h3>Academi theme - Installation steps</h3>
 
-You should have received a copy of the GNU General Public License along with
-this program.  If not, see <https://www.gnu.org/licenses/>.
+<ul>
+
+
+<li>Please unzip the downloaded theme zip file, you will get folder 'academi'</li>
+
+<li>Copy folder 'academi' and put into theme folder of your moodle system</li>
+
+<li>Next login as Site administrator</li>
+
+<li>Go to 'Site administration' -> 'Notifications' , here on 'Plugins check' page you will see the academi theme in listing.</li>
+
+<li>Click the "Upgrade Moodle database now" button displayed on bottom of the page</li>
+
+<li>You will get success message once the theme installed successfully.</li>
+
+<li>By clicking "Continue" button on success page , you will get options to change the academi theme settings.</li>
+
+<li>You can modify the settings later too :-)</li>
+
+</ul>
+
+
+<h3>Steps to set academi theme as default theme for your moodle system</h3>
+
+<ul>
+
+<li>Login as site administrator</li>
+
+<li>Go to Site administration -> Appearance -> Themes -> Theme selector</li>
+
+<li>Click the "Change theme" button for device type as "Default"</li>
+
+<li>It will list all the available themes for "Default device"</li>
+
+<li>Then click "Use theme" button on "Academi theme"</li>
+
+<li>Next click the "Continue" button ,thats it.</li>
+
+<li>Cheers, you have done it !!!</li>
+
+<li>If you need any support related to this theme , kindly send a mail to <a href="mailto:info@lmsace.com">info@lmsace.com</a></li>
+
+</ul>
+
+</div>
+</div>
