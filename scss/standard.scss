@@ -550,6 +550,13 @@ form#coursesearch {
         }
     }
 }
+
+body {
+    &:not(.path-admin) #page.drawers {
+        padding: 0;
+    }
+}
+
 .path-admin {
     .buttons {
         background: none;
@@ -1231,6 +1238,7 @@ div.backup-section + form {
 .theme-container #page.drawers .main-inner {
     margin-top: 0;
     width: -webkit-fill-available !important;
+    max-width: $modal-xl;
 }
 .default-container {
     /* &:not(.path-admin):not(#page-course-management):not(#page-course-view-participants) {
