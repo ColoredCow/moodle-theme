@@ -16,6 +16,9 @@
                 background: $white;
             }
         }
+        .companymenu {
+            display: none !important;
+        }
         .navbar-nav {
             height: 100%;
             .simplesearchform {
@@ -322,6 +325,7 @@
 }
 #header {
     .editmode-switch-form {
+        display: none !important;
         margin-left: 10px;
         .input-group label {
             color: $white !important;

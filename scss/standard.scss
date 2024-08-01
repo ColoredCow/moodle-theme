@@ -551,12 +551,6 @@ form#coursesearch {
     }
 }
 
-body {
-    &:not(.path-admin) #page.drawers {
-        padding: 0;
-    }
-}
-
 .path-admin {
     .buttons {
         background: none;

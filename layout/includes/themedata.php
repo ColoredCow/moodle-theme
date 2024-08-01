@@ -46,12 +46,12 @@ switch ($navstyle) {
         break;
 }
 
-$custommenu = $OUTPUT->custom_menu();
-if ($custommenu == "") {
-    $navbarclass = "navbar-toggler d-lg-none nocontent-navbar";
-} else {
-    $navbarclass = "navbar-toggler d-lg-none";
-}
+// $custommenu = $OUTPUT->custom_menu();
+// if ($custommenu == "") {
+//     $navbarclass = "navbar-toggler d-lg-none nocontent-navbar";
+// } else {
+//     $navbarclass = "navbar-toggler d-lg-none";
+// }
 
 $templatecontext = [
     "logourl" => $logourl,
