@@ -35,3 +35,13 @@
 .login-container h2.login-heading, #guestlogin, .login-divider, .loginform .d-flex {
     display: none !important;
 }
+
+#page-wrapper #page #page-content {
+    background-color: #FFFFFF !important;
+}
+
+@media (min-width: 768px) {
+    .login-container {
+        width: 410px !important;
+    }
+}
