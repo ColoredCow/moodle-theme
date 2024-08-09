@@ -29,7 +29,8 @@ use html_writer;
 use moodle_url;
 use lang_string;
 use stdClass;
-use context_course;
+use core\chart_pie;
+use core\chart_series;
 
 /**
  * The core course renderer.
@@ -235,76 +236,46 @@ class course_renderer extends \core_course_renderer {
      */
     public function frontpage() {
         global $CFG, $SITE;
-
         $output = '';
-        $themeblocks = new \theme_academi\academi_blocks();
-        $beforelayout = [FRONTPAGEPROMOTEDCOURSE, FRONTPAGESITEFEATURES, FRONTPAGEMARKETINGSPOT];
-        $afterlayout = [FRONTPAGEJUMBOTRON];
-        if (isloggedin() && !isguestuser() && isset($CFG->frontpageloggedin)) {
-            $frontpagelayout = explode(",", $CFG->frontpageloggedin);
-        } else {
-            $frontpagelayout = explode(",", $CFG->frontpage);
-        }
-        $academifrontpagelayout = array_merge($beforelayout, $frontpagelayout, $afterlayout);
-        foreach ($academifrontpagelayout as $a) {
-            switch($a) {
-                // Display the main part of the front page.
-                case FRONTPAGENEWS:
-                    if ($SITE->newsitems) {
-                        // Print forums only when needed.
-                        require_once($CFG->dirroot .'/mod/forum/lib.php');
-                        if (($newsforum = forum_get_course_forum($SITE->id, 'news')) &&
-                                ($forumcontents = $this->frontpage_news($newsforum))) {
-                            $newsforumcm = get_fast_modinfo($SITE)->instances['forum'][$newsforum->id];
-                            $output .= $this->frontpage_part('skipsitenews', 'site-news-forum',
-                                $newsforumcm->get_formatted_name(), $forumcontents);
-                        }
-                    }
-                    break;
 
-                case FRONTPAGEENROLLEDCOURSELIST:
-                    $mycourseshtml = $this->frontpage_my_courses();
-                    if (!empty($mycourseshtml)) {
-                        $output .= $this->frontpage_part('skipmycourses', 'frontpage-course-list',
-                            get_string('mycourses'), $mycourseshtml);
-                    }
-                    break;
+        $frontpagelayout = ['overview', 'insights'];
 
-                case FRONTPAGEALLCOURSELIST:
-                    $availablecourseshtml = $this->frontpage_available_courses();
-                    $output .= $this->frontpage_part('skipavailablecourses', 'frontpage-available-course-list',
-                        get_string('availablecourses'), $availablecourseshtml);
+        foreach ($frontpagelayout as $section) {
+            switch($section) {
+                case 'overview':
+                    $output .= $this->frontpage_overview();
                     break;
-
-                case FRONTPAGECATEGORYNAMES:
-                    $output .= $this->frontpage_part('skipcategories', 'frontpage-category-names',
-                        get_string('categories'), $this->frontpage_categories_list());
-                    break;
-
-                case FRONTPAGECATEGORYCOMBO:
-                    $output .= $this->frontpage_part('skipcourses', 'frontpage-category-combo',
-                        get_string('courses'), $this->frontpage_combo_list());
-                    break;
-
-                case FRONTPAGECOURSESEARCH:
-                    $output .= $this->box($this->course_search_form(''), 'd-flex justify-content-center');
-                    break;
-                case FRONTPAGEPROMOTEDCOURSE:
-                    $output .= $this->promoted_courses();
-                    break;
-                case FRONTPAGESITEFEATURES:
-                    $output .= $themeblocks->sitefeatures();
-                    break;
-                case FRONTPAGEMARKETINGSPOT:
-                    $output .= $themeblocks->marketingspot();
-                    break;
-                case FRONTPAGEJUMBOTRON:
-                    $output .= $themeblocks->jumbotron();
+                case 'insights':
+                    $output .= $this->frontpage_insights();
                     break;
             }
             $output .= '<br />';
         }
         return $output;
+    }
+
+    public function frontpage_overview() {
+        global $CFG, $DB;
+        $template= ['overview'=> true];
+
+        return $this->output->render_from_template("theme_academi/course_blocks", $template);
+    }
+
+    public function frontpage_insights() {
+        global $CFG, $DB;
+        $chart = new chart_pie();
+        $template = [];
+
+        // Add dummy data to the chart.
+        $series = new chart_series('Dummy Data', [30, 50, 20]);
+        $chart->add_series($series);
+
+        // Set labels for the chart.
+        $chart->set_labels(['Category 1', 'Category 2', 'Category 3']);
+        $template['insights'] = true;
+        $template['mychart']= $chart;
+        $this->include_frontslide_js('promotedcourse');
+        return $this->output->render_from_template("theme_academi/course_blocks", $template);
     }
 
     /**
