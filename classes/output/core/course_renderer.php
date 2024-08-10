@@ -266,15 +266,16 @@ class course_renderer extends \core_course_renderer {
         $chart = new chart_pie();
         $template = [];
 
-        // Add dummy data to the chart.
+         // Add dummy data to the chart.
         $series = new chart_series('Dummy Data', [30, 50, 20]);
         $chart->add_series($series);
 
         // Set labels for the chart.
         $chart->set_labels(['Category 1', 'Category 2', 'Category 3']);
+        // Render the chart to HTML.
+        $renderedchart = $this->output->render_chart($chart, false);
         $template['insights'] = true;
-        $template['mychart']= $chart;
-        $this->include_frontslide_js('promotedcourse');
+        $template['chart']= $renderedchart;
         return $this->output->render_from_template("theme_academi/course_blocks", $template);
     }
 
