@@ -5,7 +5,6 @@ require_login();
 
 initialize_page();
 echo $OUTPUT->header();
-var_dump(get_string('pluginname', 'moocs'));
 
 echo $OUTPUT->footer();
 
