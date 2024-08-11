@@ -15,19 +15,17 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin administration pages are defined here.
+ * Plugin version and other meta-data are defined here.
  *
- * @package     moocs
- * @category    admin
+ * @package     moodle_moocs
  * @copyright   2024 ColoredCow 
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-if ($hassiteconfig) {
-    $ADMIN->add('root', new admin_category('moocs', 'MooCs'));
-	
-	$ADMIN->add('moocs', new admin_externalpage('moocs', 'MooCs',
-                    new moodle_url('/theme/academi/moocs/manage_moocs.php')));
-}
+$plugin->component = 'moodle_moocs';
+$plugin->release = '1.0.0';
+$plugin->version = 2024071705;
+$plugin->requires = 2022112800;
+$plugin->maturity = MATURITY_ALPHA;

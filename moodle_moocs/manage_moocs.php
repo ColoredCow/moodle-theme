@@ -5,7 +5,6 @@ require_login();
 
 initialize_page();
 echo $OUTPUT->header();
-
 echo $OUTPUT->footer();
 
 /**
@@ -16,7 +15,7 @@ function initialize_page() {
 
     $context = context_system::instance();
     $PAGE->set_context($context);
-    $PAGE->set_url(new moodle_url('/theme/academi/moocs/manage_moocs.php'));
+    $PAGE->set_url(new moodle_url('/theme/academi/moodle_moocs/manage_moocs.php'));
     $PAGE->set_title('MOOCs');
     $PAGE->set_heading("MooCs");
 }
