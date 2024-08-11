@@ -1798,3 +1798,7 @@ body:not(.pagelayout-frontpage) {
     }
 }
 /* End of Drawer */
+
+// Hide the Navigation Links
+[data-key='myhome'] { display: none;}
+[data-key='mycourses'] { display: none; } 
