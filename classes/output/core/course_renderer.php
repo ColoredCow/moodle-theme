@@ -249,7 +249,7 @@ class course_renderer extends \core_course_renderer {
                     $output .= $this->frontpage_overview($activesurveycount, $totalschoolcount);
                     break;
                 case 'insights':
-                    $output .= $this->frontpage_insights($survey, $totalschoolcount);
+                    $output .= $this->frontpage_insights($survey);
                     break;
             }
             $output .= '<br />';
@@ -267,19 +267,22 @@ class course_renderer extends \core_course_renderer {
         return $this->output->render_from_template("theme_academi/course_blocks", $template);
     }
 
-    public function frontpage_insights($survey, $totalschoolcount) {
+    public function frontpage_insights($survey) {
         global $CFG, $DB;
         $chart = new chart_pie();
         $template = [];
         $activesurveycount = $survey->get_active_survey_count();
+        $completedsurveycount = $survey->get_completed_survey_count('Completed');
         $totalsurveyresponsescount = $survey->get_survey_responses_count();
+        $totaldraftsurveycount = $survey->get_completed_survey_count('Draft');
 
-         // Add dummy data to the chart.
-        $series = new chart_series('Dummy Data', [$activesurveycount, $totalschoolcount, $totalsurveyresponsescount]);
+         // Add Survey data to the chart.
+        $series = new chart_series('Survey', [$activesurveycount, $completedsurveycount, $totaldraftsurveycount, $totalsurveyresponsescount]);
         $chart->add_series($series);
 
         // Set labels for the chart.
-        $chart->set_labels(['Active Surveys', 'Active Schools', 'Total Survey Responses']);
+        $charlabels = ['Active Surveys', 'Completed Surveys', 'Draft Surveys', 'Total Survey Responses'];
+        $chart->set_labels($charlabels);
         // Render the chart to HTML.
         $renderedchart = $this->output->render_chart($chart, false);
         $template['insights'] = true;
