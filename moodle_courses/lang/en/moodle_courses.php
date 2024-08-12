@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for moodle_moocs.
+ * Strings for moodle_courses.
  *
- * @package moodle_moocs
+ * @package moodle_courses
  * @copyright 2024 ColoredCow
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
