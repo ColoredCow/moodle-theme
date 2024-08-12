@@ -97,13 +97,15 @@
     <br/><br/><br/>
     <div class="container mt-6">
         <div>
-            <h2 class="text-dark"><bold>Hi Admin,<bold></h2>   
+            <h2 class="text-dark"><bold>Hi {{username}},<bold></h2>   
             <h3 class="text-dark">Platform Overview</h3>   
         </div>
         <div class="d-flex mt-3">
             <div class="bg-light border p-3 w-25 rounded">
                 <div>Active Schools</div>
-                <div class="">50</div>
+                {{#totalschoolcount}}
+                    <div class="">{{totalschoolcount}}</div>
+                {{/totalschoolcount}}
             </div>
             <div class="bg-light border p-3 w-25 ml-3 rounded">
                 <div>Enrolled Students</div>
@@ -115,7 +117,9 @@
             </div>
             <div class="bg-light border p-3 w-25 ml-3 rounded">
                 <div>Active Surveys</div>
-                <div class="">20</div>
+                {{#activesurveycount}}
+                    <div class="">{{activesurveycount}}</div>
+                {{/activesurveycount}}
             </div>
         </div>
     </div>
@@ -123,7 +127,7 @@
 
 {{! Course Insights }}
 {{#insights}}
-    <div class="container">
+    <div class="container mt-6 border border-secondary rounded p-5">
         {{{ chart }}}
     </div>
 {{/insights}}
