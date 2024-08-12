@@ -237,16 +237,19 @@ class course_renderer extends \core_course_renderer {
     public function frontpage() {
         global $CFG, $SITE;
         $output = '';
-
+        $survey = new \local_moodle_survey\model\survey();
+        $audienceaccess = new \local_moodle_survey\model\audience_access();
+        $activesurveycount = $survey->get_active_survey_count();
+        $totalschoolcount = $audienceaccess->get_schools_count();
         $frontpagelayout = ['overview', 'insights'];
 
         foreach ($frontpagelayout as $section) {
             switch($section) {
                 case 'overview':
-                    $output .= $this->frontpage_overview();
+                    $output .= $this->frontpage_overview($activesurveycount, $totalschoolcount);
                     break;
                 case 'insights':
-                    $output .= $this->frontpage_insights();
+                    $output .= $this->frontpage_insights($survey, $totalschoolcount);
                     break;
             }
             $output .= '<br />';
@@ -254,24 +257,29 @@ class course_renderer extends \core_course_renderer {
         return $output;
     }
 
-    public function frontpage_overview() {
-        global $CFG, $DB;
-        $template= ['overview'=> true];
+    public function frontpage_overview($activesurveycount, $totalschoolcount) {
+        global $CFG, $DB, $USER;
+        $template = ['overview'=> true];
+        $template['username'] =  $USER->firstname;
+        $template['activesurveycount'] = $activesurveycount;
+        $template['totalschoolcount'] = $totalschoolcount;
 
         return $this->output->render_from_template("theme_academi/course_blocks", $template);
     }
 
-    public function frontpage_insights() {
+    public function frontpage_insights($survey, $totalschoolcount) {
         global $CFG, $DB;
         $chart = new chart_pie();
         $template = [];
+        $activesurveycount = $survey->get_active_survey_count();
+        $totalsurveyresponsescount = $survey->get_survey_responses_count();
 
          // Add dummy data to the chart.
-        $series = new chart_series('Dummy Data', [30, 50, 20]);
+        $series = new chart_series('Dummy Data', [$activesurveycount, $totalschoolcount, $totalsurveyresponsescount]);
         $chart->add_series($series);
 
         // Set labels for the chart.
-        $chart->set_labels(['Category 1', 'Category 2', 'Category 3']);
+        $chart->set_labels(['Active Surveys', 'Active Schools', 'Total Survey Responses']);
         // Render the chart to HTML.
         $renderedchart = $this->output->render_chart($chart, false);
         $template['insights'] = true;
