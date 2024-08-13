@@ -325,10 +325,9 @@
 }
 #header {
     .editmode-switch-form {
-        display: none !important;
-        margin-left: 10px;
         .input-group label {
             color: $white !important;
+            display: none !important;
         }
         .custom-control {
             .custom-control-input {
@@ -356,6 +355,10 @@
             }
         }
     }
+}
+
+#page-header, .secondary-navigation {
+    display: none !important;
 }
 
 /* Header Message app */

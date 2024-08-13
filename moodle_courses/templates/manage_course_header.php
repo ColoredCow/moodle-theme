@@ -1,24 +1,24 @@
 <?php
     $categories = [];
     $moocsstatusoptions = [];
-    $createurl = '#';
+    $createurl = new \moodle_url('/course/edit.php');
     $createsurveycategoryurl = '#';
     $createmoocscategoryurl = '#';
     $iconurl = new \moodle_url('/local/moodle_survey/pix/plus-icon.svg');
     $createbutton = html_writer::div(
         html_writer::link(
             $createmoocscategoryurl,
-            'MOOC categories',
+            'Course categories',
             array('class' => 'create-button')
         ) .
         html_writer::link(
             $createurl,
-            html_writer::tag('img', '', array('src' => $iconurl, 'alt' => 'Icon', 'class' => 'plus-icon')) . ' ' . 'Create new MOOC',
+            html_writer::tag('img', '', array('src' => $iconurl, 'alt' => 'Icon', 'class' => 'plus-icon')) . ' ' . 'Create new Course',
             array('class' => 'create-button')
         ),
         'create-button-container'
     );
-    $heading = html_writer::tag('span', 'MOOCs', ['class' => 'page-title']);
+    $heading = html_writer::tag('span', 'Courses', ['class' => 'page-title']);
     $content = $heading . ' ' . $createbutton;
     echo html_writer::tag('div', $content, ['class' => 'survey-header']);
 
