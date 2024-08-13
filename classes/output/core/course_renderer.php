@@ -30,6 +30,7 @@ use moodle_url;
 use lang_string;
 use stdClass;
 use core\chart_pie;
+use core\chart_bar;
 use core\chart_series;
 
 /**
@@ -271,26 +272,42 @@ class course_renderer extends \core_course_renderer {
         global $CFG, $DB;
         $chart = new chart_pie();
         $template = [];
-        $totalsurveycount  = $survey->get_survey_count();
         $activesurveycount = $survey->get_active_survey_count();
         $completedsurveycount = $survey->get_survey_count_by_status('Completed');
-        $totalsurveyresponsescount = $survey->get_survey_responses_count();
         $totaldraftsurveycount = $survey->get_survey_count_by_status('Draft');
 
-        $piechartdata = [$totalsurveycount, $activesurveycount, $completedsurveycount, $totaldraftsurveycount, $totalsurveyresponsescount];
+        $piechartdata = [$activesurveycount, $completedsurveycount, $totaldraftsurveycount];
 
          // Add Survey data to the chart.
         $series = new chart_series('Survey', $piechartdata);
         $chart->add_series($series);
 
         // Set labels for the chart.
-        $charlabels = ['Total Survey','Active Surveys', 'Completed Surveys', 'Draft Surveys', 'Total Survey Responses'];
+        $charlabels = ['Active Surveys', 'Completed Surveys', 'Draft Surveys'];
         $chart->set_labels($charlabels);
         // Render the chart to HTML.
         $renderedchart = $this->output->render_chart($chart, false);
+        $renderhorizontalbarchart = $this->output->render_chart($this->get_bar_chart(), false);
         $template['insights'] = true;
         $template['chart']= $renderedchart;
+        $template['horizontalbarchart']= $renderhorizontalbarchart;
         return $this->output->render_from_template("theme_academi/course_blocks", $template);
+    }
+
+    public function get_bar_chart() {
+        $chartbar = new chart_bar();
+        $underdeveloped = [0, 0, 30, 0, 0];
+        $developing = [6, 0, 0, 12, 0];
+        $remarkeble = [0, 15, 0, 0, 13];
+        $chartbar->set_horizontal(true);
+        $saleseries = new chart_series('Underdeveloped', $underdeveloped);
+        $underdevelopedseries = new chart_series('Underdeveloped', $developing);
+        $remarkableseries = new chart_series('Remarkable', $remarkeble);
+        $chartbar->add_series($saleseries);
+        $chartbar->add_series($underdevelopedseries);
+        $chartbar->add_series($remarkableseries);
+        $chartbar->set_labels(['Empathy', 'Growth mindset', 'Well being', 'Social Awareness', 'Self Awareness']);
+        return $chartbar;
     }
 
     /**
