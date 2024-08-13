@@ -138,7 +138,7 @@
     font-weight: 400;
 }
 
-.prominent-insights {
+.prominent-insights-title {
     font-size: 22px;
     font-weight: 400;
     margin: 0px;
@@ -148,4 +148,8 @@
     font-size: 14px;
     font-weight: 400;
     color: #626262;
+}
+
+.overview, .prominent-insights {
+    margin-inline: 50px;
 }
