@@ -150,6 +150,17 @@
     color: #626262;
 }
 
-.overview, .prominent-insights {
+.overview, .prominent-insights, .quick-action {
     margin-inline: 50px;
+}
+
+.create-custom-button {
+    background-color: #FFFFFF;
+    border: 1px solid #F16824 !important;
+    border-radius: 8px;
+    color: #F16824 !important;
+    padding: 12px 14px;
+    text-decoration: none !important;
+    font-size: 14px;
+    font-weight: 500;
 }

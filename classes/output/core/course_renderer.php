@@ -242,12 +242,15 @@ class course_renderer extends \core_course_renderer {
         $audienceaccess = new \local_moodle_survey\model\audience_access();
         $activesurveycount = $survey->get_active_survey_count();
         $totalschoolcount = $audienceaccess->get_schools_count();
-        $frontpagelayout = ['overview', 'insights'];
+        $frontpagelayout = ['overview', 'quickaction', 'insights'];
 
         foreach ($frontpagelayout as $section) {
             switch($section) {
                 case 'overview':
                     $output .= $this->frontpage_overview($activesurveycount, $totalschoolcount);
+                    break;
+                case 'quickaction':
+                    $output .= $this->quick_action();
                     break;
                 case 'insights':
                     $output .= $this->frontpage_insights($survey);
@@ -264,6 +267,16 @@ class course_renderer extends \core_course_renderer {
         $template['username'] =  $USER->firstname;
         $template['activesurveycount'] = $activesurveycount;
         $template['totalschoolcount'] = $totalschoolcount;
+
+        return $this->output->render_from_template("theme_academi/course_blocks", $template);
+    }
+
+    public function quick_action() {
+        $template = ['quickaction'=> true];
+        $template['createnewschool'] = '#';
+        $template['createnewcourseurl'] = '#';
+        $template['createsurveyurl'] = new moodle_url('/local/moodle_survey/create_survey.php');
+        $template['plusicon'] = '<img src="' . new moodle_url('/theme/academi/pix/plus-icon.svg') . '" alt="Plus Icon" class="plus-icon" />';
 
         return $this->output->render_from_template("theme_academi/course_blocks", $template);
     }
