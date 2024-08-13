@@ -271,17 +271,20 @@ class course_renderer extends \core_course_renderer {
         global $CFG, $DB;
         $chart = new chart_pie();
         $template = [];
+        $totalsurveycount  = $survey->get_survey_count();
         $activesurveycount = $survey->get_active_survey_count();
-        $completedsurveycount = $survey->get_completed_survey_count('Completed');
+        $completedsurveycount = $survey->get_survey_count_by_status('Completed');
         $totalsurveyresponsescount = $survey->get_survey_responses_count();
-        $totaldraftsurveycount = $survey->get_completed_survey_count('Draft');
+        $totaldraftsurveycount = $survey->get_survey_count_by_status('Draft');
+
+        $piechartdata = [$totalsurveycount, $activesurveycount, $completedsurveycount, $totaldraftsurveycount, $totalsurveyresponsescount];
 
          // Add Survey data to the chart.
-        $series = new chart_series('Survey', [$activesurveycount, $completedsurveycount, $totaldraftsurveycount, $totalsurveyresponsescount]);
+        $series = new chart_series('Survey', $piechartdata);
         $chart->add_series($series);
 
         // Set labels for the chart.
-        $charlabels = ['Active Surveys', 'Completed Surveys', 'Draft Surveys', 'Total Survey Responses'];
+        $charlabels = ['Total Survey','Active Surveys', 'Completed Surveys', 'Draft Surveys', 'Total Survey Responses'];
         $chart->set_labels($charlabels);
         // Render the chart to HTML.
         $renderedchart = $this->output->render_chart($chart, false);
