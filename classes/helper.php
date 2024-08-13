@@ -208,4 +208,34 @@ class helper {
         }
         return $slideimage;
     }
+
+    public function get_top_level_category_by_name($name) {
+        global $DB;
+       
+        return $DB->get_record('course_categories', ['name' => $name, 'parent' => 0]);       
+    }
+
+    public function get_courses_list_by_category_id($categoryid) {
+        global $DB;
+       
+        return $DB->get_records('course', ['category' => $categoryid]); 
+    }
+
+    public function get_category_of_course($course) {
+        global $DB;
+
+        return $DB->get_record('course_categories', ['id' => $course->category]);
+    }
+
+    public function get_assignees_count_for_course($course) {
+        global $DB;
+
+        return 200;
+    }
+    
+    public function get_schools_count_for_course($course) {
+        global $DB;
+
+        return $DB->count_records('company_course', ['courseid' => $course->id]);
+    }
 }

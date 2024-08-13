@@ -256,4 +256,8 @@
         }
     }
 }
+
+#backToTop, [data-region="footer-container-popover"] {
+    display: none !important;
+}
 /* End of Footer */

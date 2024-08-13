@@ -1,7 +1,7 @@
 <?php
     $categories = [];
     $moocsstatusoptions = [];
-    $createurl = new \moodle_url('/course/edit.php');
+    $createurl = new \moodle_url('/course/edit.php', ['category'=>$coursescategory->id]);
     $createsurveycategoryurl = '#';
     $createmoocscategoryurl = '#';
     $iconurl = new \moodle_url('/local/moodle_survey/pix/plus-icon.svg');

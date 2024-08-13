@@ -5,7 +5,10 @@ require_login();
 
 initialize_page();
 echo $OUTPUT->header();
-echo display_page(true);
+$helper = new \theme_academi\helper();
+$coursescategory = $helper->get_top_level_category_by_name('Courses');
+$courses = $helper->get_courses_list_by_category_id($coursescategory->id);
+echo display_page($courses, $coursescategory);
 echo $OUTPUT->footer();
 
 /**
@@ -21,13 +24,13 @@ function initialize_page() {
 }
 
 
-function display_page($moocs) {
+function display_page($courses, $coursescategory) {
     global $OUTPUT;
 
     // Include the HTML for the survey management interface
 
     include(__DIR__ . '/templates/manage_course_header.php');
-    if ($moocs) {
+    if ($courses) {
         include(__DIR__ . '/templates/manage_course_table.php');
     } else {
         echo html_writer::tag('div', 'No Courses Found.', ['class' => 'alert alert-info']);

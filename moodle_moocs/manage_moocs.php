@@ -5,7 +5,10 @@ require_login();
 
 initialize_page();
 echo $OUTPUT->header();
-echo display_page(true);
+$helper = new \theme_academi\helper();
+$mooccategory = $helper->get_top_level_category_by_name('MOOCs');
+$moocs = $helper->get_courses_list_by_category_id($mooccategory->id);
+echo display_page($moocs, $mooccategory);
 echo $OUTPUT->footer();
 
 /**
@@ -20,7 +23,7 @@ function initialize_page() {
     $PAGE->set_title('MOOCs');
 }
 
-function display_page($moocs) {
+function display_page($moocs, $mooccategory) {
     global $OUTPUT;
 
     // Include the HTML for the survey management interface
