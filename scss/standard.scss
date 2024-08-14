@@ -1813,3 +1813,8 @@ body:not(.pagelayout-frontpage) {
     font-size: 14px;
     font-weight: 500;
 }
+
+.create-button-container {
+    display: flex;
+    gap: 20px;
+}
