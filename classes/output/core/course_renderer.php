@@ -274,7 +274,9 @@ class course_renderer extends \core_course_renderer {
     public function quick_action() {
         $template = ['quickaction'=> true];
         $template['createnewschool'] = '#';
-        $template['createnewcourseurl'] = new \moodle_url('/course/edit.php');
+        $helper = new \theme_academi\helper();
+        $coursescategory = $helper->get_top_level_category_by_name('Courses');
+        $template['createnewcourseurl'] = new \moodle_url('/course/edit.php', ['category'=>$coursescategory->id]);
         $template['createsurveyurl'] = new moodle_url('/local/moodle_survey/create_survey.php');
         $template['plusicon'] = '<img src="' . new moodle_url('/theme/academi/pix/plus-icon.svg') . '" alt="Plus Icon" class="plus-icon" />';
 

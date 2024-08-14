@@ -265,3 +265,4 @@ $string['urldesc'] = 'Enter the URL to set the link for the title of this site f
 $string['viewallcourses'] = 'View all courses';
 $string['courses'] = 'Courses';
 $string['createcourses'] = 'Create New Course';
+$string['school'] = 'School';

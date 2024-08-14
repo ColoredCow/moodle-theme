@@ -221,6 +221,11 @@ class helper {
         return $DB->get_records('course', ['category' => $categoryid]); 
     }
 
+    public function get_school_list() {
+        global $DB;
+        return $DB->get_records('company', []);
+    }
+
     public function get_category_of_course($course) {
         global $DB;
 
