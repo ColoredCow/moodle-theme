@@ -1802,3 +1802,14 @@ body:not(.pagelayout-frontpage) {
 // Hide the Navigation Links
 [data-key='myhome'] { display: none;}
 [data-key='mycourses'] { display: none; } 
+
+.create-button {
+    background-color: #FFFFFF;
+    border: 1px solid #F16824 !important;
+    border-radius: 8px;
+    color: #F16824 !important;
+    padding: 12px 14px;
+    text-decoration: none !important;
+    font-size: 14px;
+    font-weight: 500;
+}
