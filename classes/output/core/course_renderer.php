@@ -289,9 +289,6 @@ class course_renderer extends \core_course_renderer {
         $pieChartsHtml = '';
         $horizontalBarChartsHtml = '';
     
-        $activesurveycount = $survey->get_active_survey_count();
-        $completedsurveycount = $survey->get_survey_count_by_status('Completed');
-        $totaldraftsurveycount = $survey->get_survey_count_by_status('Draft');
         $surveycategorydata = $survey->get_all_survey_categories();
         $surveyquestioncatgorycount = $survey->get_question_category_count();
     
@@ -306,25 +303,20 @@ class course_renderer extends \core_course_renderer {
         $surveycategorieshtml = $this->get_survey_category_dropdown_field($surveycatgories, $PAGE);
         for ($i = 0; $i < $surveyquestioncatgorycount; $i++) {
             $pieChart = new chart_pie();
-            // comment the survey releted pie chart for now
-            // $pieChartData = [$activesurveycount, $completedsurveycount, $totaldraftsurveycount];
             $pieChartData = [rand(0,100), rand(0,100), rand(0,100)];
             $series = new chart_series('Insights', $pieChartData);
             $pieChart->add_series($series);
-            // Comment the Survey Labels
-            // $pieChartLabels = ['Active Surveys', 'Completed Surveys', 'Draft Surveys'];
             $pieChartLabels = ['Underdeveloped', 'Developing', 'Remarkable'];
             $pieChart->set_labels($pieChartLabels);
             $pieChartHtml = $this->output->render_chart($pieChart, false);
-            $pieChartsHtml .= '<div class="chart mt-4 border border-secondary rounded mx-4 py-3">' . $pieChartHtml . '</div>';
+            $pieChartsHtml .= $pieChartHtml;
             $underdeveloped = [0, rand(0, 10), rand(0, 10), 0, 0];
             $developing = [rand(0, 20), 0, 0, rand(0, 10), 0];
             $remarkeble = [0, rand(0, 10), 0, 0, rand(0, 20)];
-    
-            $horizontalBarChart = $this->get_bar_chart($underdeveloped, $developing, $remarkeble);
-            $horizontalBarChartHtml = $this->output->render_chart($horizontalBarChart, false);
-            $horizontalBarChartsHtml .= '<div class="chart mt-4 border border-secondary rounded py-3">' . $horizontalBarChartHtml . '</div>';
         }
+        $horizontalBarChart = $this->get_bar_chart($underdeveloped, $developing, $remarkeble);
+        $horizontalBarChartHtml = $this->output->render_chart($horizontalBarChart, false);
+        $horizontalBarChartsHtml .= $horizontalBarChartHtml;
     
         $template['insights'] = true;
         $template['surveycatgories'] = $surveycategorieshtml;
