@@ -304,18 +304,22 @@ class course_renderer extends \core_course_renderer {
         }
     
         $surveycategorieshtml = $this->get_survey_category_dropdown_field($surveycatgories, $PAGE);
-        $underdeveloped = [0, 0, rand(0, 10), 0, 0];
-        $developing = [rand(0, 20), 0, 0, rand(0, 10), 0];
-        $remarkeble = [0, rand(0, 10), 0, 0, rand(0, 20)];
         for ($i = 0; $i < $surveyquestioncatgorycount; $i++) {
             $pieChart = new chart_pie();
-            $pieChartData = [$activesurveycount, $completedsurveycount, $totaldraftsurveycount];
-            $series = new chart_series('Survey', $pieChartData);
+            // comment the survey releted pie chart for now
+            // $pieChartData = [$activesurveycount, $completedsurveycount, $totaldraftsurveycount];
+            $pieChartData = [rand(0,100), rand(0,100), rand(0,100)];
+            $series = new chart_series('Insights', $pieChartData);
             $pieChart->add_series($series);
-            $pieChartLabels = ['Active Surveys', 'Completed Surveys', 'Draft Surveys'];
+            // Comment the Survey Labels
+            // $pieChartLabels = ['Active Surveys', 'Completed Surveys', 'Draft Surveys'];
+            $pieChartLabels = ['Underdeveloped', 'Developing', 'Remarkable'];
             $pieChart->set_labels($pieChartLabels);
             $pieChartHtml = $this->output->render_chart($pieChart, false);
             $pieChartsHtml .= '<div class="chart mt-4 border border-secondary rounded mx-4 py-3">' . $pieChartHtml . '</div>';
+            $underdeveloped = [0, rand(0, 10), rand(0, 10), 0, 0];
+            $developing = [rand(0, 20), 0, 0, rand(0, 10), 0];
+            $remarkeble = [0, rand(0, 10), 0, 0, rand(0, 20)];
     
             $horizontalBarChart = $this->get_bar_chart($underdeveloped, $developing, $remarkeble);
             $horizontalBarChartHtml = $this->output->render_chart($horizontalBarChart, false);
