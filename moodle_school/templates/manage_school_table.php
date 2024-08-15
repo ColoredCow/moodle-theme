@@ -11,15 +11,27 @@ $table->head = [
     'STATUS',
 ];
 
+$schoolid = optional_param('schoolid', null, PARAM_INT);
+if(isset($schoolid)) {
+    $SESSION->currenteditingcompany = $schoolid;
+    $editschoolurl = new moodle_url('/blocks/iomad_company_admin/company_edit_form.php');
+    redirect($editschoolurl);
+}
+
 foreach($schools as $school) {
     $table->data[] = [
-        $school->name,
+        get_school_edit_page_link($school),
         $school->city,
         $school->country,
         'John Doe',
         'dps.delhi@gmail.com',
         html_writer::span('Active', "badge badge-pill badge-color survey-status survey-live")
     ];
+}
+
+function get_school_edit_page_link($school) {
+    $indexpageurl = new moodle_url('/theme/academi/moodle_school/manage_school.php', ['schoolid' => $school->id]);
+    return html_writer::link($indexpageurl, $school->name);
 }
 
 echo html_writer::table($table);

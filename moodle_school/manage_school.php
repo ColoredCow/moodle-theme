@@ -23,7 +23,7 @@ function initialize_page() {
 }
 
 function display_page($schools) {
-    global $OUTPUT;
+    global $OUTPUT, $SESSION;
 
     // Include the HTML for the survey management interface
 
