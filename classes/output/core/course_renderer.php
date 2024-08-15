@@ -285,29 +285,58 @@ class course_renderer extends \core_course_renderer {
 
     public function frontpage_insights($survey) {
         global $CFG, $DB;
-        $chart = new chart_pie();
-        $template = [];
+    
+        $pieChartsHtml = '';
+        $horizontalBarChartsHtml = '';
+    
         $activesurveycount = $survey->get_active_survey_count();
         $completedsurveycount = $survey->get_survey_count_by_status('Completed');
         $totaldraftsurveycount = $survey->get_survey_count_by_status('Draft');
-
-        $piechartdata = [$activesurveycount, $completedsurveycount, $totaldraftsurveycount];
-
-         // Add Survey data to the chart.
-        $series = new chart_series('Survey', $piechartdata);
-        $chart->add_series($series);
-
-        // Set labels for the chart.
-        $charlabels = ['Active Surveys', 'Completed Surveys', 'Draft Surveys'];
-        $chart->set_labels($charlabels);
-        // Render the chart to HTML.
-        $renderedchart = $this->output->render_chart($chart, false);
-        $renderhorizontalbarchart = $this->output->render_chart($this->get_bar_chart(), false);
+        $surveycategorydata = $survey->get_all_survey_categories();
+        $surveyquestioncatgorycount = $survey->get_question_category_count();
+    
+        $surveycatgories = [];
+        foreach ($surveycategorydata as $surveycategory) {
+            $surveycatgories[] = [
+                'slug' => $surveycategory->slug,
+                'name' => $surveycategory->label,
+            ];
+        }
+    
+        $surveycategorieshtml = '<select name="surveycategories" id="surveycategories" class="surveycategories">';
+        $surveycategorieshtml .= '<option value="all">All</option>';
+        foreach ($surveycatgories as $surveycategory) {
+            $surveycategorieshtml .= '<option value="' . $surveycategory['slug'] . '">' . $surveycategory['name'] . '</option>';
+        }
+        $surveycategorieshtml .= '</select>';
+    
+        for ($i = 0; $i < $surveyquestioncatgorycount; $i++) {
+            $pieChart = new chart_pie();
+            $pieChartData = [$activesurveycount, $completedsurveycount, $totaldraftsurveycount];
+            $series = new chart_series('Survey', $pieChartData);
+            $pieChart->add_series($series);
+            $pieChartLabels = ['Active Surveys', 'Completed Surveys', 'Draft Surveys'];
+            $pieChart->set_labels($pieChartLabels);
+            $pieChartHtml = $this->output->render_chart($pieChart, false);
+            $pieChartsHtml .= '<div class="chart mt-4 border border-secondary rounded mx-4 py-3">
+                                    ' . $pieChartHtml . '
+                                </div>';
+    
+            $horizontalBarChart = $this->get_bar_chart();
+            $horizontalBarChartHtml = $this->output->render_chart($horizontalBarChart, false);
+            $horizontalBarChartsHtml .= '<div class="chart mt-4 border border-secondary rounded py-3">
+                                            ' . $horizontalBarChartHtml . '
+                                        </div>';
+        }
+    
         $template['insights'] = true;
-        $template['chart']= $renderedchart;
-        $template['horizontalbarchart']= $renderhorizontalbarchart;
+        $template['surveycatgories'] = $surveycategorieshtml;
+    
+        $template['chart'] = $pieChartsHtml;
+        $template['horizontalbarchart'] = $horizontalBarChartsHtml;
+    
         return $this->output->render_from_template("theme_academi/course_blocks", $template);
-    }
+    }    
 
     public function get_bar_chart() {
         $chartbar = new chart_bar();
