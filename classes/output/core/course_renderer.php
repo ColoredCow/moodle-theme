@@ -304,11 +304,9 @@ class course_renderer extends \core_course_renderer {
         }
     
         $surveycategorieshtml = $this->get_survey_category_dropdown_field($surveycatgories, $PAGE);
-        $selectedCategory = $_GET['category'] ?? 'all';
-        $horizontalbarchartdata = $this->get_horizontal_bar_chart_data($selectedCategory);
-        $underdeveloped = $horizontalbarchartdata[0];
-        $developing = $horizontalbarchartdata[1];
-        $remarkeble = $horizontalbarchartdata[2];
+        $underdeveloped = [0, 0, rand(0, 10), 0, 0];
+        $developing = [rand(0, 20), 0, 0, rand(0, 10), 0];
+        $remarkeble = [0, rand(0, 10), 0, 0, rand(0, 20)];
         for ($i = 0; $i < $surveyquestioncatgorycount; $i++) {
             $pieChart = new chart_pie();
             $pieChartData = [$activesurveycount, $completedsurveycount, $totaldraftsurveycount];
@@ -370,28 +368,6 @@ class course_renderer extends \core_course_renderer {
         $surveycategorieshtml .= '</form>';
     
         return $surveycategorieshtml;
-    }
-
-    public function get_horizontal_bar_chart_data($selectedCategory) {
-        switch ($selectedCategory) {
-            case 'government':
-                $underdeveloped = [0, 0, 20, 0, 0];
-                $developing = [10, 0, 0, 15, 0];
-                $remarkeble = [0, 15, 0, 0, 10];
-                break;
-            case 'private':
-                $underdeveloped = [0, 0, 10, 0, 0];
-                $developing = [5, 0, 0, 20, 0];
-                $remarkeble = [0, 15, 0, 0, 10];
-                break;
-            default:
-                $underdeveloped = [0, 0, 30, 0, 0];
-                $developing = [15, 0, 0, 35, 0];
-                $remarkeble = [0, 30, 0, 0, 20];
-                break;
-        }
-
-        return [$underdeveloped, $developing, $remarkeble];
     }
 
     public function render_html_dyanmic_script() {
