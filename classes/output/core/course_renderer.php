@@ -273,7 +273,7 @@ class course_renderer extends \core_course_renderer {
 
     public function quick_action() {
         $template = ['quickaction'=> true];
-        $template['createnewschool'] = '#';
+        $template['createnewschool'] = new moodle_url('/blocks/iomad_company_admin/company_edit_form.php', ['createnew' => 1]);
         $helper = new \theme_academi\helper();
         $coursescategory = $helper->get_top_level_category_by_name('Courses');
         $template['createnewcourseurl'] = new \moodle_url('/course/edit.php', ['category'=>$coursescategory->id]);

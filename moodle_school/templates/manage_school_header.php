@@ -1,9 +1,7 @@
 <?php
     $categories = [];
     $moocsstatusoptions = [];
-    $createurl = new \moodle_url('/course/edit.php', ['category'=>$mooccategory->id]);
-    $createsurveycategoryurl = '#';
-    $createmoocscategoryurl = '#';
+    $createurl = new moodle_url('/blocks/iomad_company_admin/company_edit_form.php', ['createnew' => 1]);
     $iconurl = new \moodle_url('/theme/academi/pix/plus-icon.svg');
     $createbutton = html_writer::div(
         html_writer::link(
