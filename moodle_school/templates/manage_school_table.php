@@ -21,8 +21,8 @@ if(isset($schoolid)) {
 foreach($schools as $school) {
     $table->data[] = [
         get_school_edit_page_link($school),
+        $school->address,
         $school->city,
-        $school->country,
         'John Doe',
         'dps.delhi@gmail.com',
         html_writer::span('Active', "badge badge-pill badge-color survey-status survey-live")
