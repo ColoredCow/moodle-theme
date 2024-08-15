@@ -1818,3 +1818,11 @@ body:not(.pagelayout-frontpage) {
     display: flex;
     gap: 20px;
 }
+
+select {
+    width: 254px;
+    height: 46px;
+    border: 1px solid #949494;
+    padding: 9px 16px;
+    border-radius: 8px;
+}

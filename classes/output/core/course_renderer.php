@@ -273,7 +273,7 @@ class course_renderer extends \core_course_renderer {
 
     public function quick_action() {
         $template = ['quickaction'=> true];
-        $template['createnewschool'] = '#';
+        $template['createnewschool'] = new moodle_url('/blocks/iomad_company_admin/company_edit_form.php', ['createnew' => 1]);
         $helper = new \theme_academi\helper();
         $coursescategory = $helper->get_top_level_category_by_name('Courses');
         $template['createnewcourseurl'] = new \moodle_url('/course/edit.php', ['category'=>$coursescategory->id]);
@@ -284,45 +284,129 @@ class course_renderer extends \core_course_renderer {
     }
 
     public function frontpage_insights($survey) {
-        global $CFG, $DB;
-        $chart = new chart_pie();
-        $template = [];
+        global $CFG, $DB, $PAGE;
+    
+        $pieChartsHtml = '';
+        $horizontalBarChartsHtml = '';
+    
         $activesurveycount = $survey->get_active_survey_count();
         $completedsurveycount = $survey->get_survey_count_by_status('Completed');
         $totaldraftsurveycount = $survey->get_survey_count_by_status('Draft');
-
-        $piechartdata = [$activesurveycount, $completedsurveycount, $totaldraftsurveycount];
-
-         // Add Survey data to the chart.
-        $series = new chart_series('Survey', $piechartdata);
-        $chart->add_series($series);
-
-        // Set labels for the chart.
-        $charlabels = ['Active Surveys', 'Completed Surveys', 'Draft Surveys'];
-        $chart->set_labels($charlabels);
-        // Render the chart to HTML.
-        $renderedchart = $this->output->render_chart($chart, false);
-        $renderhorizontalbarchart = $this->output->render_chart($this->get_bar_chart(), false);
+        $surveycategorydata = $survey->get_all_survey_categories();
+        $surveyquestioncatgorycount = $survey->get_question_category_count();
+    
+        $surveycatgories = [];
+        foreach ($surveycategorydata as $surveycategory) {
+            $surveycatgories[] = [
+                'slug' => $surveycategory->slug,
+                'name' => $surveycategory->label,
+            ];
+        }
+    
+        $surveycategorieshtml = $this->get_survey_category_dropdown_field($surveycatgories, $PAGE);
+        $selectedCategory = $_GET['category'] ?? 'all';
+        $horizontalbarchartdata = $this->get_horizontal_bar_chart_data($selectedCategory);
+        $underdeveloped = $horizontalbarchartdata[0];
+        $developing = $horizontalbarchartdata[1];
+        $remarkeble = $horizontalbarchartdata[2];
+        for ($i = 0; $i < $surveyquestioncatgorycount; $i++) {
+            $pieChart = new chart_pie();
+            $pieChartData = [$activesurveycount, $completedsurveycount, $totaldraftsurveycount];
+            $series = new chart_series('Survey', $pieChartData);
+            $pieChart->add_series($series);
+            $pieChartLabels = ['Active Surveys', 'Completed Surveys', 'Draft Surveys'];
+            $pieChart->set_labels($pieChartLabels);
+            $pieChartHtml = $this->output->render_chart($pieChart, false);
+            $pieChartsHtml .= '<div class="chart mt-4 border border-secondary rounded mx-4 py-3">' . $pieChartHtml . '</div>';
+    
+            $horizontalBarChart = $this->get_bar_chart($underdeveloped, $developing, $remarkeble);
+            $horizontalBarChartHtml = $this->output->render_chart($horizontalBarChart, false);
+            $horizontalBarChartsHtml .= '<div class="chart mt-4 border border-secondary rounded py-3">' . $horizontalBarChartHtml . '</div>';
+        }
+    
         $template['insights'] = true;
-        $template['chart']= $renderedchart;
-        $template['horizontalbarchart']= $renderhorizontalbarchart;
+        $template['surveycatgories'] = $surveycategorieshtml;
+        $template['chart'] = $pieChartsHtml;
+        $template['horizontalbarchart'] = $horizontalBarChartsHtml;
+    
         return $this->output->render_from_template("theme_academi/course_blocks", $template);
     }
 
-    public function get_bar_chart() {
+    public function get_bar_chart($underdeveloped, $developing, $remarkeble) {
         $chartbar = new chart_bar();
-        $underdeveloped = [0, 0, 30, 0, 0];
-        $developing = [6, 0, 0, 12, 0];
-        $remarkeble = [0, 15, 0, 0, 13];
+        
         $chartbar->set_horizontal(true);
-        $saleseries = new chart_series('Underdeveloped', $underdeveloped);
-        $underdevelopedseries = new chart_series('Underdeveloped', $developing);
+        $underdevelopedseries = new chart_series('Underdeveloped', $underdeveloped);
+        $developingseries = new chart_series('Developing', $developing);
         $remarkableseries = new chart_series('Remarkable', $remarkeble);
-        $chartbar->add_series($saleseries);
         $chartbar->add_series($underdevelopedseries);
+        $chartbar->add_series($developingseries);
         $chartbar->add_series($remarkableseries);
         $chartbar->set_labels(['Empathy', 'Growth mindset', 'Well being', 'Social Awareness', 'Self Awareness']);
+        
         return $chartbar;
+    }
+
+    public function get_survey_category_dropdown_field($surveycatgories, $PAGE) {
+        $selectedCategory = optional_param('category', 'all', PARAM_ALPHANUM);
+    
+        $surveycategorieshtml = '<form method="get" id="surveyForm" action="' . new moodle_url($PAGE->url) .'">';
+    
+        $surveycategorieshtml .= '<select name="surveycategories" id="surveycategories" class="surveycategories">';
+        $surveycategorieshtml .= '<option value="all" ' . ($selectedCategory === 'all' ? 'selected' : '') . '>All</option>';
+    
+        foreach ($surveycatgories as $surveycategory) {
+            $selected = ($selectedCategory === $surveycategory['slug']) ? 'selected' : '';
+            $surveycategorieshtml .= sprintf(
+                '<option value="%s" %s>%s</option>',
+                s($surveycategory['slug']),
+                $selected,
+                s($surveycategory['name'])
+            );
+        }
+    
+        $surveycategorieshtml .= '</select>';
+        $surveycategorieshtml .= $this->render_html_dyanmic_script();
+        $surveycategorieshtml .= '</form>';
+    
+        return $surveycategorieshtml;
+    }
+
+    public function get_horizontal_bar_chart_data($selectedCategory) {
+        switch ($selectedCategory) {
+            case 'government':
+                $underdeveloped = [0, 0, 20, 0, 0];
+                $developing = [10, 0, 0, 15, 0];
+                $remarkeble = [0, 15, 0, 0, 10];
+                break;
+            case 'private':
+                $underdeveloped = [0, 0, 10, 0, 0];
+                $developing = [5, 0, 0, 20, 0];
+                $remarkeble = [0, 15, 0, 0, 10];
+                break;
+            default:
+                $underdeveloped = [0, 0, 30, 0, 0];
+                $developing = [15, 0, 0, 35, 0];
+                $remarkeble = [0, 30, 0, 0, 20];
+                break;
+        }
+
+        return [$underdeveloped, $developing, $remarkeble];
+    }
+
+    public function render_html_dyanmic_script() {
+        $surveycategorieshtml = <<<HTML
+        <script>
+        document.getElementById('surveycategories').addEventListener('change', function() {
+            var selectedCategory = this.value;
+            var baseUrl = window.location.href.split('?')[0];
+            var newUrl = baseUrl + '?category=' + encodeURIComponent(selectedCategory);
+            window.location.href = newUrl;
+        });
+        </script>
+        HTML;
+
+        return $surveycategorieshtml;
     }
 
     /**
