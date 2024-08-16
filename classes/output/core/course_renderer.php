@@ -302,6 +302,7 @@ class course_renderer extends \core_course_renderer {
     
         $surveycategorieshtml = $this->get_survey_category_dropdown_field($surveycatgories, $PAGE);
         for ($i = 0; $i < $surveyquestioncatgorycount; $i++) {
+            $CFG->chart_colorset = ['#F47A29', '#FFF0E6', '#FFF'];
             $pieChart = new chart_pie();
             $pieChartData = [rand(0,100), rand(0,100), rand(0,100)];
             $series = new chart_series('Insights', $pieChartData);
