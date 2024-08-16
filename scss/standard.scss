@@ -1826,3 +1826,18 @@ select {
     padding: 9px 16px;
     border-radius: 8px;
 }
+
+.chart-area {
+    width: 400px;
+    height: 350px;
+    margin-bottom: 20px;
+
+    .chart-image, canvas {
+        width: 400px !important;
+        height: 350px !important;
+    }
+}
+
+.pie-chart-container {
+    gap: 100px;
+}
