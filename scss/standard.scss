@@ -1827,7 +1827,11 @@ select {
     border-radius: 8px;
 }
 
-.chart-area {
+.horizontalbar-chart {
+    background-color: #F6F6F6;
+}
+
+.chart .chart-area {
     width: 400px;
     height: 350px;
     margin-bottom: 20px;
