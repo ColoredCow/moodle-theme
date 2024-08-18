@@ -1832,12 +1832,11 @@ select {
 }
 
 .chart .chart-area {
-    width: 400px;
-    height: 350px;
+    width: 300px;
     margin-bottom: 20px;
 
     .chart-image, canvas {
-        width: 400px !important;
+        width: 300px !important;
         height: 350px !important;
     }
 }
