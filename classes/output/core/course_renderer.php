@@ -333,7 +333,7 @@ class course_renderer extends \core_course_renderer {
             $html .= html_writer::start_div('d-flex align-items-center');
                     foreach ($charlabels as $key => $value) {
                         $labelsandcolor =  $this->get_chart_label_and_color($value);
-                        $html .= html_writer::start_div('pie-chart-labels-section d-flex ');
+                        $html .= html_writer::start_div('pie-chart-labels-section d-flex align-items-center');
                             $html .= html_writer::start_div('pie-chart-label-color ' . $labelsandcolor['class']);
                             $html .= html_writer::end_div();
                             $html .= html_writer::start_div();
