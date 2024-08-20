@@ -194,78 +194,74 @@ class course_renderer extends \core_course_renderer {
 
     public function frontpage_insights($survey) {
         global $CFG, $DB, $PAGE;
+        
+        $surveycategories = $this->get_survey_categories($survey);
+        $surveycategoryid = optional_param('surveycategoryid', $surveycategories[0]['slug'], PARAM_INT);
+        $livesurveyinterpretations = $survey->get_live_surveys_with_interpretations($surveycategoryid);
+        $evaluateinterpretationcount = $this->calculate_category_interpretation_counts($livesurveyinterpretations);
+        $CFG->chart_colorset = get_string('chartcolorset', 'theme_academi');
+        
+        $template = [
+            'surveycatgories' => $this->get_dropdown_field($surveycategories, $PAGE, "surveycategoryid"),
+            'insightstypes' => $this->get_dropdown_field(get_string('insightstypes', 'theme_academi'), $PAGE, "insightstype"),
+            'chart' => $this->generate_pie_charts($evaluateinterpretationcount),
+            'insights' => true,
+            'horizontalbarchart' => '',
+            'piechartlabels' => $this->get_bar_chart_labels($evaluateinterpretationcount['interpretations'])
+        ];
     
-        $pieChartsHtml = '';
-        $horizontalBarChartsHtml = '';
-        $surveycatgories = [];
+        // Check if no data was found
+        if (empty($livesurveyinterpretations)) {
+            $template['nodatafound'] = html_writer::tag('div', get_string('nochartexist', 'theme_academi'), ['class' => 'no-chart-found alert alert-info']); 
+        }
+    
+        return $this->output->render_from_template("theme_academi/course_blocks", $template);
+    }
+    
+    private function get_survey_categories($survey) {
+        $categories = [];
         $surveycategorydata = $survey->get_all_survey_categories();
         foreach ($surveycategorydata as $surveycategory) {
-            $surveycatgories[] = [
+            $categories[] = [
                 'slug' => $surveycategory->id,
                 'name' => $surveycategory->label,
             ];
         }
-
-        $insightstype = get_string('insightstypes', 'theme_academi');
+        return $categories;
+    }
     
-        $surveycategoryid = optional_param('surveycategoryid', $surveycatgories[0]['slug'], PARAM_INT);
-        $livesurveyinterpretations = $survey->get_live_surveys_with_interpretations($surveycategoryid);
-        $evaluateinterpretationcount = $this->calculate_category_interpretation_counts($livesurveyinterpretations);
-
-        $surveycategorieshtml = $this->get_dropdown_field($surveycatgories, $PAGE, "surveycategoryid");
-        $insightstypeshtml = $this->get_dropdown_field($insightstype, $PAGE, "insightstype");
-        $piechartlabels = $this->get_bar_chart_labels($evaluateinterpretationcount['interpretations']);
-        $CFG->chart_colorset = get_string('chartcolorset', 'theme_academi');
-        if (sizeof($livesurveyinterpretations) == 0) {
-            $nodatafound = html_writer::tag('div', get_string('nochartexist', 'theme_academi'), ['class' => 'no-chart-found alert alert-info']); 
-            $template['nodatafound'] = $nodatafound;
-        }
-        $uniquecategoryslugs = $evaluateinterpretationcount['categories'];
-        $categoryinterpretationcounts = $evaluateinterpretationcount['counts'];
+    private function generate_pie_charts($evaluationCounts) {
+        $pieChartsHtml = '';
+        $uniquecategoryslugs = $evaluationCounts['categories'];
+        $categoryinterpretationcounts = $evaluationCounts['counts'];
+        
         foreach ($uniquecategoryslugs as $categorySlug) {
             $pieChart = new chart_pie();
             $labelIndexMap = get_string('chartlabels', 'theme_academi');
-
+    
             $pieChartData = array_fill(0, 4, 0);
-
-            $pieChartLabels = [];
-
-            foreach ($labelIndexMap as $label => $index) {
-                $pieChartLabels[] = $label;
-            }
-
-            // Populate pie chart data based on the counts
+            $pieChartLabels = array_keys($labelIndexMap);
+    
             if (isset($categoryinterpretationcounts[$categorySlug])) {
                 foreach ($categoryinterpretationcounts[$categorySlug] as $label => $count) {
-                    // Check if the label exists in the mapping
                     if (isset($labelIndexMap[$label])) {
                         $index = $labelIndexMap[$label];
-                        $pieChartData[$index] = $count; // Assign count to the correct index
+                        $pieChartData[$index] = $count;
                     }
                 }
             }
         
             $series = new chart_series('Insights', $pieChartData);
             $pieChart->add_series($series);
-        
-            // Set the labels and other chart options
             $pieChart->set_labels($pieChartLabels);
             $pieChart->set_legend_options(['display' => false]);
             $pieChart->set_title($categorySlug);
             
-            // Render the chart and append the HTML to $pieChartsHtml
             $pieChartHtml = $this->output->render_chart($pieChart, false);
             $pieChartsHtml .= $pieChartHtml;
         }
-        $template['chart'] = $pieChartsHtml;
-    
-        $template['insights'] = true;
-        $template['surveycatgories'] = $surveycategorieshtml;
-        $template['insightstypes'] = $insightstypeshtml;
-        $template['horizontalbarchart'] = $horizontalBarChartsHtml;
-        $template['piechartlabels'] = $piechartlabels;
-    
-        return $this->output->render_from_template("theme_academi/course_blocks", $template);
+        
+        return $pieChartsHtml;
     }
 
     public function calculate_category_interpretation_counts($liveSurveyInterpretations) {
