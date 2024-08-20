@@ -210,7 +210,7 @@ class course_renderer extends \core_course_renderer {
             'piechartlabels' => $this->get_bar_chart_labels($evaluateinterpretationcount['interpretations'])
         ];
     
-        // Check if no data was found
+        // Check if no pie charts data was found
         if (empty($livesurveyinterpretations)) {
             $template['nodatafound'] = html_writer::tag('div', get_string('nochartexist', 'theme_academi'), ['class' => 'no-chart-found alert alert-info']); 
         }
@@ -280,7 +280,7 @@ class course_renderer extends \core_course_renderer {
                 }
             }
             
-            // Count the interpretations for each question category
+            // Interpretations count for each question category
             foreach ($surveyResponses as $key => $response) {
                 if (is_array($response) && isset($response['questionCategorySlug']) && isset($response['interpretation'])) {
                     $categorySlug = $response['questionCategorySlug'];
