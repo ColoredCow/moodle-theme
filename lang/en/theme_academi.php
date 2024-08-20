@@ -266,3 +266,28 @@ $string['viewallcourses'] = 'View all courses';
 $string['courses'] = 'Courses';
 $string['createcourses'] = 'Create New Course';
 $string['school'] = 'School';
+$string['insightstypes'] = [
+    [
+        "slug" => "teacherinsights",
+        "name" => "Teachers Insights"
+    ],
+    [
+        "slug" => "studentinsights",
+        "name" => "Student Insights"
+    ]
+];
+$string['chartlabels'] =  [
+    [
+        "label" => "Underdeveloped",
+    ],
+    [
+        "label" => "Developing",
+    ],
+    [
+        "label" => "Progressing",
+    ],
+    [
+        "label" => "Remarkable",
+    ]
+];
+$string['chartcolorset'] = ['#F47A29', '#FFB685', '#FFF0E6', '#FFF'];

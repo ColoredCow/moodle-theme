@@ -300,21 +300,13 @@ class course_renderer extends \core_course_renderer {
             ];
         }
 
-        $insightstype = [
-            [
-                "slug" => "teacherinsights",
-                "name" => "Teachers Insights"
-            ],
-            [
-                "slug" => "studentinsights",
-                "name" => "Student Insights"
-            ]
-        ];
+        $insightstype = get_string('insightstypes', 'theme_academi');
 
         $surveycategorieshtml = $this->get_dropdown_field($surveycatgories, $PAGE, "surveycategory");
         $insightstypeshtml = $this->get_dropdown_field($insightstype, $PAGE, "insightstype");
+        $piechartlabels = $this->get_bar_chart_labels();
         for ($i = 0; $i < $surveyquestioncatgorycount; $i++) {
-            $CFG->chart_colorset = ['#F47A29', '#FFB685', '#FFF0E6', '#FFF'];;
+        $CFG->chart_colorset = get_string('chartcolorset', 'theme_academi');
             $pieChart = new chart_pie();
             $pieChartData = [rand(0,100), rand(0,100), rand(0,100), rand(0,100)];
             $series = new chart_series('Insights', $pieChartData);
@@ -338,6 +330,7 @@ class course_renderer extends \core_course_renderer {
         $template['insightstypes'] = $insightstypeshtml;
         $template['chart'] = $pieChartsHtml;
         $template['horizontalbarchart'] = $horizontalBarChartsHtml;
+        $template['piechartlabels'] = $piechartlabels;
     
         return $this->output->render_from_template("theme_academi/course_blocks", $template);
     }
@@ -355,6 +348,37 @@ class course_renderer extends \core_course_renderer {
         $chartbar->set_labels(['Empathy', 'Growth mindset', 'Well being', 'Social Awareness', 'Self Awareness']);
         
         return $chartbar;
+    }
+
+    public function get_bar_chart_labels() {
+        $charlabels = get_string('chartlabels', 'theme_academi');
+        $html = html_writer::start_div('pie-chart-label-container d-flex align-items-center justify-content-center');
+            $html .= html_writer::start_div('d-flex align-items-center');
+                    foreach ($charlabels as $key => $value) {
+                        $html .= html_writer::start_div('pie-chart-labels-section d-flex ');
+                            $html .= html_writer::start_div('pie-chart-label-color ' . $this->get_pie_chart_colors($key));
+                            $html .= html_writer::end_div();
+                            $html .= html_writer::start_div();
+                                $html .= html_writer::tag('span', $value['label'], array('class' => 'pie-chart-label'));
+                            $html .= html_writer::end_div();
+                        $html .= html_writer::end_div();
+                    }
+            $html .= html_writer::end_div();
+        $html .= html_writer::end_div();
+        return $html;
+    }
+    
+    public function get_pie_chart_colors($key) {
+        switch($key){
+            case 0:
+                return 'primary-chart-color';
+            case 1:
+                return 'primary10-chart-color';
+            case 2:
+                return 'primary100-chart-color';
+            case 3:
+                return 'secondary-chart-color';
+        }
     }
 
     public function get_dropdown_field($options, $PAGE, $fieldname) {
