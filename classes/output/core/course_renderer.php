@@ -299,30 +299,43 @@ class course_renderer extends \core_course_renderer {
                 'name' => $surveycategory->label,
             ];
         }
-    
-        $surveycategorieshtml = $this->get_survey_category_dropdown_field($surveycatgories, $PAGE);
+
+        $insightstype = [
+            [
+                "slug" => "teacherinsights",
+                "name" => "Teachers Insights"
+            ],
+            [
+                "slug" => "studentinsights",
+                "name" => "Student Insights"
+            ]
+        ];
+
+        $surveycategorieshtml = $this->get_dropdown_field($surveycatgories, $PAGE, "surveycategory");
+        $insightstypeshtml = $this->get_dropdown_field($insightstype, $PAGE, "insightstype");
         for ($i = 0; $i < $surveyquestioncatgorycount; $i++) {
-            $CFG->chart_colorset = ['#F47A29', '#FFF0E6', '#FFF'];
+            $CFG->chart_colorset = ['#F47A29', '#FFB685', '#FFF0E6', '#FFF'];;
             $pieChart = new chart_pie();
-            $pieChartData = [rand(0,100), rand(0,100), rand(0,100)];
+            $pieChartData = [rand(0,100), rand(0,100), rand(0,100), rand(0,100)];
             $series = new chart_series('Insights', $pieChartData);
             $pieChart->add_series($series);
-            $pieChartLabels = ['Underdeveloped', 'Developing', 'Remarkable'];
+            $pieChartLabels = ['Well developed', 'Developing', 'Progressing', 'Moderately developed'];
             $pieChart->set_labels($pieChartLabels);
             $pieChart->set_legend_options(['display' => false]);
             $pieChart->set_title('Survey Data -' . $i + 1 .'');
             $pieChartHtml = $this->output->render_chart($pieChart, false);
             $pieChartsHtml .= $pieChartHtml;
-            $underdeveloped = [0, rand(0, 10), rand(0, 10), 0, 0];
-            $developing = [rand(0, 20), 0, 0, rand(0, 10), 0];
-            $remarkeble = [0, rand(0, 10), 0, 0, rand(0, 20)];
         }
+        $underdeveloped = [0, rand(0, 10), rand(0, 10), 0, 0];
+        $developing = [rand(0, 20), 0, 0, rand(0, 10), 0];
+        $remarkeble = [0, rand(0, 10), 0, 0, rand(0, 20)];
         $horizontalBarChart = $this->get_bar_chart($underdeveloped, $developing, $remarkeble);
         $horizontalBarChartHtml = $this->output->render_chart($horizontalBarChart, false);
         $horizontalBarChartsHtml .= $horizontalBarChartHtml;
     
         $template['insights'] = true;
         $template['surveycatgories'] = $surveycategorieshtml;
+        $template['insightstypes'] = $insightstypeshtml;
         $template['chart'] = $pieChartsHtml;
         $template['horizontalbarchart'] = $horizontalBarChartsHtml;
     
@@ -344,44 +357,56 @@ class course_renderer extends \core_course_renderer {
         return $chartbar;
     }
 
-    public function get_survey_category_dropdown_field($surveycatgories, $PAGE) {
-        $selectedCategory = optional_param('category', 'all', PARAM_ALPHANUM);
+    public function get_dropdown_field($options, $PAGE, $fieldname) {
+        $selectedValue = optional_param($fieldname, '', PARAM_ALPHANUM);
     
-        $surveycategorieshtml = '<form method="get" id="surveyForm" action="' . new moodle_url($PAGE->url) .'">';
+        $selectfieldhtml = '<form method="get" action="' . new moodle_url($PAGE->url) .'">';
+        $selectfieldhtml .= '<select name='.$fieldname.' id='.$fieldname.' class='.$fieldname.'>';
     
-        $surveycategorieshtml .= '<select name="surveycategories" id="surveycategories" class="surveycategories">';
-        $surveycategorieshtml .= '<option value="all" ' . ($selectedCategory === 'all' ? 'selected' : '') . '>All</option>';
-    
-        foreach ($surveycatgories as $surveycategory) {
-            $selected = ($selectedCategory === $surveycategory['slug']) ? 'selected' : '';
-            $surveycategorieshtml .= sprintf(
+        foreach ($options as $option) {
+            $selected = ($selectedValue === $option['slug']) ? 'selected' : '';
+            $selectfieldhtml .= sprintf(
                 '<option value="%s" %s>%s</option>',
-                s($surveycategory['slug']),
+                s($option['slug']),
                 $selected,
-                s($surveycategory['name'])
+                s($option['name'])
             );
         }
     
-        $surveycategorieshtml .= '</select>';
-        $surveycategorieshtml .= $this->render_html_dyanmic_script();
-        $surveycategorieshtml .= '</form>';
+        $selectfieldhtml .= '</select>';
+        $selectfieldhtml .= $this->render_html_dyanmic_script();
+        $selectfieldhtml .= '</form>';
     
-        return $surveycategorieshtml;
+        return $selectfieldhtml;
     }
 
     public function render_html_dyanmic_script() {
-        $surveycategorieshtml = <<<HTML
+        $script = <<<HTML
         <script>
-        document.getElementById('surveycategories').addEventListener('change', function() {
-            var selectedCategory = this.value;
-            var baseUrl = window.location.href.split('?')[0];
-            var newUrl = baseUrl + '?category=' + encodeURIComponent(selectedCategory);
-            window.location.href = newUrl;
-        });
+            function updateUrl() {
+                var selectedCategory = document.getElementById('surveycategory').value;
+                var selectedInsightsType = document.getElementById('insightstype').value;
+                
+                var baseUrl = window.location.href.split('?')[0];
+                var params = new URLSearchParams(window.location.search);
+    
+                if (selectedCategory) {
+                    params.set('surveycategory', encodeURIComponent(selectedCategory));
+                }
+    
+                if (selectedInsightsType) {
+                    params.set('insightstype', encodeURIComponent(selectedInsightsType));
+                }
+    
+                window.location.href = baseUrl + '?' + params.toString();
+            }
+    
+            document.getElementById('surveycategory').addEventListener('change', updateUrl);
+            document.getElementById('insightstype').addEventListener('change', updateUrl);
         </script>
         HTML;
-
-        return $surveycategorieshtml;
+    
+        return $script;
     }
 
     /**
