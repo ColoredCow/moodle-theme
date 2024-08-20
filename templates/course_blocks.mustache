@@ -33,65 +33,6 @@
     }
 }}
 
-{{! Available course }}
-{{#availablecourses}}
-    <div class="available-courses" id="available-courses">
-        <div class="available-block">
-            <div class="container">
-                <div class="row">
-                    <div class="course-slider col-md-12" data-crow="{{totalavacount}}">
-                        {{#courses}}
-                            <div class="available-content">
-                                <div class="available-img">
-                                    <a href={{link}}>
-                                        <img src="{{imgurl}}" width="249" height="200" alt={{name}}>
-                                    </a>
-                                </div>
-                                <div class="available-info">
-                                    <div class="title-block">
-                                        <h6><a href={{link}}>{{name}}</a></h6>
-                                    </div>
-                                    {{#summary}}
-                                        <div class="desc-block">
-                                            <p>{{#shortentext}} 120, {{{summary}}} {{/shortentext}}</p>
-                                        </div>
-                                    {{/summary}}
-                                </div>
-                            </div>
-                        {{/courses}}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-{{/availablecourses}}
-
-{{! Promototed course }}
-{{#promatedcourse}}
-    {{#isblockempty}}
-        <div class="custom-alert-block alert alert-warning">
-            {{#str}}blockemptymessage, theme_academi{{/str}}
-        </div>
-    {{/isblockempty}}
-
-    {{#blockisempty}}
-        <div class="promoted-courses" id="promoted-courses">
-            <div class="container">
-                {{#promotedcontent}}
-                    <div class="titlebar">
-                        {{#promotedtitle}}
-                            <h2><b>{{promotedtitle}}</b></h2>
-                        {{/promotedtitle}}
-                        {{#promotedcoursedesc}}
-                            <p>{{promotedcoursedesc}}</p>
-                        {{/promotedcoursedesc}}
-                    </div>
-                {{/promotedcontent}}
-            </div>
-        </div>
-    {{/blockisempty}}
-{{/promatedcourse}}
-
 {{! Overview }}
 {{#overview}}
     <div class="overview mt-6">
@@ -150,9 +91,16 @@
                     <h5 class="text-dark overall-insights-text">Overall Insights</h5>
                     {{{ piechartlabels }}}
                 </div>
-                <div class="mt-4 d-flex flex-wrap pie-chart-container">
-                    {{{ chart }}}
-                </div>
+                {{#chart}}
+                    <div class="mt-4 d-flex flex-wrap pie-chart-container">
+                        {{{ chart }}}
+                    </div>
+                {{/chart}}
+                {{#nodatafound}}
+                    <div class="mt-4 d-flex flex-wrap pie-chart-container justify-content-center">
+                        {{{ nodatafound }}}
+                    </div>
+                {{/nodatafound}}
             </div>
         </div>
     </div>

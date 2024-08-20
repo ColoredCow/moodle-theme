@@ -140,97 +140,6 @@ class course_renderer extends \core_course_renderer {
     }
 
     /**
-     * Promoted course content for the theme front page.
-     *
-     * @return string
-     */
-    public function promoted_courses() {
-        global $CFG, $DB;
-
-        $pcoursestatus = theme_academi_get_setting('pcoursestatus');
-        $promotedtitle = theme_academi_get_setting('promotedtitle', 'format_html');
-        $promotedtitle = theme_academi_lang($promotedtitle);
-        $promotedcoursedesc = theme_academi_lang(theme_academi_get_setting('promotedcoursedesc'));
-        $featuredids = theme_academi_get_setting('promotedcourses');
-        $promotedcontent = empty($promotedtitle) && empty($promotedcoursedesc) ? false : true;
-        $blockisempty = empty($promotedtitle) && empty($promotedcoursedesc) && empty($featuredids) ? false : $pcoursestatus;
-        $blocks = [];
-        if (!empty($featuredids)) {
-            /* Get Featured courses id from DB */
-            $rcourseids = (!empty($featuredids)) ? explode(",", $featuredids) : [];
-            $helperobj = new \theme_academi\helper();
-            $hcourseids = $helperobj->hidden_courses_ids();
-
-            if (!empty($hcourseids)) {
-                foreach ($rcourseids as $key => $val) {
-                    if (in_array($val, $hcourseids)) {
-                        unset($rcourseids[$key]);
-                    }
-                }
-            }
-
-            foreach ($rcourseids as $key => $val) {
-                $ccourse = $DB->get_record('course', ['id' => $val]);
-                if (empty($ccourse)) {
-                    unset($rcourseids[$key]);
-                    continue;
-                }
-            }
-
-            $fcourseids = $rcourseids;
-            $totalfcourse = count($fcourseids);
-            if (!empty($fcourseids)) {
-                $i = 0;
-                foreach ($fcourseids as $courseid) {
-                    $info = [];
-                    $course = get_course($courseid);
-                    $noimgurl = $this->output->image_url('no-image', 'theme');
-                    $courseurl = new moodle_url('/course/view.php', ['id' => $courseid]);
-
-                    if ($course instanceof stdClass) {
-                        $course = new \core_course_list_element($course);
-                    }
-
-                    $imgurl = '';
-                    $summary = $helperobj->strip_html_tags($course->summary);
-                    $summary = $helperobj->course_trim_char($summary, 75);
-                    foreach ($course->get_course_overviewfiles() as $file) {
-                        $isimage = $file->is_valid_image();
-                        $imgurl = file_encode_url("$CFG->wwwroot/pluginfile.php",
-                        '/'. $file->get_contextid(). '/'. $file->get_component(). '/'.
-                        $file->get_filearea(). $file->get_filepath(). $file->get_filename(), !$isimage);
-                        if (!$isimage) {
-                            $imgurl = $noimgurl;
-                        }
-                    }
-                    if (empty($imgurl)) {
-                        $imgurl = $noimgurl;
-                    }
-                    $info['courseurl'] = $courseurl;
-                    $info['imgurl'] = $imgurl;
-                    $info['coursename'] = $course->get_formatted_name();
-                    $info['active'] = ($i == 1) ? true : false;
-                    $blocks[] = $info;
-                    $i++;
-                }
-            }
-            $template['totalfcourse'] = $totalfcourse;
-        }
-        $template['coursestatus'] = !empty($featuredids) ? true : false;
-        $template['courses'] = array_chunk($blocks, 5);
-        $template['promatedcourse'] = $pcoursestatus;
-        $template['blockisempty'] = $blockisempty;
-        if (!$blockisempty) {
-            $template['isblockempty'] = is_siteadmin() || $this->page->user_is_editing() ? true : false;
-        }
-        $template['promotedcontent'] = $promotedcontent;
-        $template['promotedtitle'] = $promotedtitle;
-        $template['promotedcoursedesc'] = $promotedcoursedesc;
-        $this->include_frontslide_js('promotedcourse');
-        return $this->output->render_from_template("theme_academi/course_blocks", $template);
-    }
-
-    /**
      * Outputs contents for frontpage as configured in $CFG->frontpage or $CFG->frontpageloggedin
      *
      * @return string
@@ -288,54 +197,126 @@ class course_renderer extends \core_course_renderer {
     
         $pieChartsHtml = '';
         $horizontalBarChartsHtml = '';
-    
-        $surveycategorydata = $survey->get_all_survey_categories();
-        $surveyquestioncatgorycount = $survey->get_question_category_count();
-    
         $surveycatgories = [];
+        $surveycategorydata = $survey->get_all_survey_categories();
         foreach ($surveycategorydata as $surveycategory) {
             $surveycatgories[] = [
-                'slug' => $surveycategory->slug,
+                'slug' => $surveycategory->id,
                 'name' => $surveycategory->label,
             ];
         }
 
         $insightstype = get_string('insightstypes', 'theme_academi');
+    
+        $surveycategoryid = optional_param('surveycategoryid', $surveycatgories[0]['slug'], PARAM_INT);
+        $livesurveyinterpretations = $survey->get_live_surveys_with_interpretations($surveycategoryid);
+        $evaluateinterpretationcount = $this->calculate_category_interpretation_counts($livesurveyinterpretations);
 
-        $surveycategorieshtml = $this->get_dropdown_field($surveycatgories, $PAGE, "surveycategory");
+        $surveycategorieshtml = $this->get_dropdown_field($surveycatgories, $PAGE, "surveycategoryid");
         $insightstypeshtml = $this->get_dropdown_field($insightstype, $PAGE, "insightstype");
-        $piechartlabels = $this->get_bar_chart_labels();
-        for ($i = 0; $i < $surveyquestioncatgorycount; $i++) {
+        $piechartlabels = $this->get_bar_chart_labels($evaluateinterpretationcount['interpretations']);
         $CFG->chart_colorset = get_string('chartcolorset', 'theme_academi');
+        if (sizeof($livesurveyinterpretations) == 0) {
+            $nodatafound = html_writer::tag('div', get_string('nochartexist', 'theme_academi'), ['class' => 'no-chart-found alert alert-info']); 
+            $template['nodatafound'] = $nodatafound;
+        }
+        $uniquecategoryslugs = $evaluateinterpretationcount['categories'];
+        $categoryinterpretationcounts = $evaluateinterpretationcount['counts'];
+        foreach ($uniquecategoryslugs as $categorySlug) {
             $pieChart = new chart_pie();
-            $pieChartData = [rand(0,100), rand(0,100), rand(0,100), rand(0,100)];
+            $labelIndexMap = get_string('chartlabels', 'theme_academi');
+
+            $pieChartData = array_fill(0, 4, 0);
+
+            $pieChartLabels = [];
+
+            foreach ($labelIndexMap as $label => $index) {
+                $pieChartLabels[] = $label;
+            }
+
+            // Populate pie chart data based on the counts
+            if (isset($categoryinterpretationcounts[$categorySlug])) {
+                foreach ($categoryinterpretationcounts[$categorySlug] as $label => $count) {
+                    // Check if the label exists in the mapping
+                    if (isset($labelIndexMap[$label])) {
+                        $index = $labelIndexMap[$label];
+                        $pieChartData[$index] = $count; // Assign count to the correct index
+                    }
+                }
+            }
+        
             $series = new chart_series('Insights', $pieChartData);
             $pieChart->add_series($series);
-            $pieChartLabels = ['Well developed', 'Developing', 'Progressing', 'Moderately developed'];
+        
+            // Set the labels and other chart options
             $pieChart->set_labels($pieChartLabels);
             $pieChart->set_legend_options(['display' => false]);
-            $pieChart->set_title('Survey Data -' . $i + 1 .'');
+            $pieChart->set_title($categorySlug);
+            
+            // Render the chart and append the HTML to $pieChartsHtml
             $pieChartHtml = $this->output->render_chart($pieChart, false);
             $pieChartsHtml .= $pieChartHtml;
         }
-        $underdeveloped = [0, rand(0, 10), rand(0, 10), 0, 0];
-        $developing = [rand(0, 20), 0, 0, rand(0, 10), 0];
-        $remarkeble = [0, rand(0, 10), 0, 0, rand(0, 20)];
-        $horizontalBarChart = $this->get_bar_chart($underdeveloped, $developing, $remarkeble);
-        $horizontalBarChartHtml = $this->output->render_chart($horizontalBarChart, false);
-        $horizontalBarChartsHtml .= $horizontalBarChartHtml;
+        $template['chart'] = $pieChartsHtml;
     
         $template['insights'] = true;
         $template['surveycatgories'] = $surveycategorieshtml;
         $template['insightstypes'] = $insightstypeshtml;
-        $template['chart'] = $pieChartsHtml;
         $template['horizontalbarchart'] = $horizontalBarChartsHtml;
         $template['piechartlabels'] = $piechartlabels;
     
         return $this->output->render_from_template("theme_academi/course_blocks", $template);
     }
 
-    public function get_bar_chart($underdeveloped, $developing, $remarkeble) {
+    public function calculate_category_interpretation_counts($liveSurveyInterpretations) {
+        $uniqueCategories = [];
+        $categoryCounts = [];
+        $interpretations = [];
+
+        foreach ($liveSurveyInterpretations as $item) {
+            $surveyResponses = json_decode($item->survey_responses, true);
+            
+            // Extract unique question categories
+            foreach ($surveyResponses['surveyData']['categoriesScores'] as $category) {
+                if (!isset($uniqueCategories[$category['catgororySlug']])) {
+                    $uniqueCategories[$category['catgororySlug']] = $category['catgororySlug'];
+                    $categoryCounts[$category['catgororySlug']] = [];
+                }
+            }
+            
+            // Count the interpretations for each question category
+            foreach ($surveyResponses as $key => $response) {
+                if (is_array($response) && isset($response['questionCategorySlug']) && isset($response['interpretation'])) {
+                    $categorySlug = $response['questionCategorySlug'];
+                    $interpretation = $response['interpretation'];
+                    
+                    if (isset($categoryCounts[$categorySlug])) {
+                        if (!isset($categoryCounts[$categorySlug][$interpretation])) {
+                            $categoryCounts[$categorySlug][$interpretation] = 0;
+                        }
+                        $categoryCounts[$categorySlug][$interpretation]++;
+                    }
+                }
+            }
+        }
+
+        foreach ($categoryCounts as $category => $interpretationCounts) {
+            foreach ($interpretationCounts as $interpretation => $count) {
+                if (!in_array($interpretation, $interpretations)) {
+                    $interpretations[] = $interpretation;
+                }
+            }
+        }
+
+        return [
+            'categories' => $uniqueCategories,
+            'counts' => $categoryCounts,
+            'interpretations' => $interpretations
+        ];
+    }
+
+    // This function not used for now.
+    public function get_horizontal_bar_chart($underdeveloped, $developing, $remarkeble) {
         $chartbar = new chart_bar();
         
         $chartbar->set_horizontal(true);
@@ -350,16 +331,17 @@ class course_renderer extends \core_course_renderer {
         return $chartbar;
     }
 
-    public function get_bar_chart_labels() {
-        $charlabels = get_string('chartlabels', 'theme_academi');
+    public function get_bar_chart_labels($labels) {
+        $charlabels = $labels;
         $html = html_writer::start_div('pie-chart-label-container d-flex align-items-center justify-content-center');
             $html .= html_writer::start_div('d-flex align-items-center');
                     foreach ($charlabels as $key => $value) {
+                        $labelsandcolor =  $this->get_chart_label_and_color($value);
                         $html .= html_writer::start_div('pie-chart-labels-section d-flex ');
-                            $html .= html_writer::start_div('pie-chart-label-color ' . $this->get_pie_chart_colors($key));
+                            $html .= html_writer::start_div('pie-chart-label-color ' . $labelsandcolor['class']);
                             $html .= html_writer::end_div();
                             $html .= html_writer::start_div();
-                                $html .= html_writer::tag('span', $value['label'], array('class' => 'pie-chart-label'));
+                                $html .= html_writer::tag('span', $labelsandcolor['label'], array('class' => 'pie-chart-label'));
                             $html .= html_writer::end_div();
                         $html .= html_writer::end_div();
                     }
@@ -368,16 +350,28 @@ class course_renderer extends \core_course_renderer {
         return $html;
     }
     
-    public function get_pie_chart_colors($key) {
+    public function get_chart_label_and_color($key) {
         switch($key){
-            case 0:
-                return 'primary-chart-color';
-            case 1:
-                return 'primary10-chart-color';
-            case 2:
-                return 'primary100-chart-color';
-            case 3:
-                return 'secondary-chart-color';
+            case 'Underdeveloped':
+                return [
+                    "class"=> 'primary-chart-color',
+                    'label' => 'Underdeveloped'
+                ];
+            case 'Developing':
+                return [
+                    "class"=> 'primary10-chart-color',
+                    'label' => 'Developing'
+                ];
+            case 'Progressing':
+                return [
+                    "class"=> 'primary100-chart-color',
+                    'label' => 'Progressing'
+                ];
+            default:
+                return [
+                    "class"=> 'secondary-chart-color',
+                    'label' => 'Remarkable'
+                ];
         }
     }
 
@@ -408,14 +402,14 @@ class course_renderer extends \core_course_renderer {
         $script = <<<HTML
         <script>
             function updateUrl() {
-                var selectedCategory = document.getElementById('surveycategory').value;
+                var selectedCategory = document.getElementById('surveycategoryid').value;
                 var selectedInsightsType = document.getElementById('insightstype').value;
                 
                 var baseUrl = window.location.href.split('?')[0];
                 var params = new URLSearchParams(window.location.search);
     
                 if (selectedCategory) {
-                    params.set('surveycategory', encodeURIComponent(selectedCategory));
+                    params.set('surveycategoryid', encodeURIComponent(selectedCategory));
                 }
     
                 if (selectedInsightsType) {
@@ -425,7 +419,7 @@ class course_renderer extends \core_course_renderer {
                 window.location.href = baseUrl + '?' + params.toString();
             }
     
-            document.getElementById('surveycategory').addEventListener('change', updateUrl);
+            document.getElementById('surveycategoryid').addEventListener('change', updateUrl);
             document.getElementById('insightstype').addEventListener('change', updateUrl);
         </script>
         HTML;
