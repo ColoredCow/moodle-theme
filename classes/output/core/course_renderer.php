@@ -309,6 +309,7 @@ class course_renderer extends \core_course_renderer {
             $pieChart->add_series($series);
             $pieChartLabels = ['Underdeveloped', 'Developing', 'Remarkable'];
             $pieChart->set_labels($pieChartLabels);
+            $pieChart->set_legend_options(['display' => false]);
             $pieChart->set_title('Survey Data -' . $i + 1 .'');
             $pieChartHtml = $this->output->render_chart($pieChart, false);
             $pieChartsHtml .= $pieChartHtml;
