@@ -1841,6 +1841,60 @@ select {
     }
 }
 
+.chart-type-select {
+    gap: 40px;
+}
+
 .pie-chart-container {
     gap: 100px;
+}
+
+.pie-chart-label-container {
+    width: 90%;
+}
+
+.pie-chart-header {
+    margin-bottom: 40px;
+}
+
+.pie-chart-labels-section {
+    margin-right: 15px;
+}
+
+.pie-chart-label-color {
+    box-sizing: border-box;
+    height: 18px;
+    width: 18px;
+    border-radius: 66px;
+    margin-right: 10px;
+}
+
+.primary-chart-color {
+    background-color: #F47A29;
+}
+
+.primary10-chart-color {
+    background-color: #FFB685;
+}
+
+.primary100-chart-color {
+    background-color: #FFF0E6;
+}
+
+.secondary-chart-color {
+    background-color: #FFF;
+}
+
+.overall-insights-text {
+    font-size: 14px;
+    font-weight: 700;
+    color: #232323;
+    margin-left: 35px;
+    margin-top: 6px;
+}
+
+.no-chart-found {
+    width: 100%;
+    text-align: center;
+    margin-inline: 20px;
 }
