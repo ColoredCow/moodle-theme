@@ -209,7 +209,6 @@ class course_renderer extends \core_course_renderer {
             'horizontalbarchart' => '',
             'piechartlabels' => $this->get_bar_chart_labels($evaluateinterpretationcount['interpretations'])
         ];
-        var_dump($livesurveyinterpretations);
     
         // Check if no pie charts data was found
         if (sizeof($livesurveyinterpretations) <= 0) {
