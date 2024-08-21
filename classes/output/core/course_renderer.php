@@ -152,6 +152,14 @@ class course_renderer extends \core_course_renderer {
         $activesurveycount = $survey->get_active_survey_count();
         $totalschoolcount = $audienceaccess->get_schools_count();
         $frontpagelayout = ['overview', 'quickaction', 'insights'];
+        
+        $userrole = get_user_role();
+        $userroles = [
+            'isprincipal' => $userrole == 'principal',
+            'isadmin' => $userrole == 'sel_admin',
+            'isteacher' => $userrole == 'teacher' ,
+            'isstudent' => $userrole == 'student'
+        ];
 
         foreach ($frontpagelayout as $section) {
             switch($section) {
@@ -162,7 +170,7 @@ class course_renderer extends \core_course_renderer {
                     $output .= $this->quick_action();
                     break;
                 case 'insights':
-                    $output .= $this->frontpage_insights($survey);
+                    $output .= $this->frontpage_insights($survey, $userroles);
                     break;
             }
             $output .= '<br />';
@@ -174,7 +182,6 @@ class course_renderer extends \core_course_renderer {
         global $CFG, $DB, $USER;
         $template = ['overview'=> true];
         $template['username'] =  $USER->firstname;
-        $template['userrole'] = get_user_role();
         $template['activesurveycount'] = $activesurveycount;
         $template['totalschoolcount'] = $totalschoolcount;
 
@@ -183,7 +190,6 @@ class course_renderer extends \core_course_renderer {
 
     public function quick_action() {
         $context = \context_system::instance();
-        $userrole = get_user_role();
         $template = ['quickaction'=> has_capability('local/moodle_survey:view-quick-access-buttons', $context)];
         $template['createnewschool'] = new moodle_url('/blocks/iomad_company_admin/company_edit_form.php', ['createnew' => 1]);
         $helper = new \theme_academi\helper();
@@ -198,10 +204,8 @@ class course_renderer extends \core_course_renderer {
         return $this->output->render_from_template("theme_academi/course_blocks", $template);
     }
 
-    public function frontpage_insights($survey) {
-        global $CFG, $DB, $PAGE;
-        $context = \context_system::instance();
-        $userrole = get_user_role();
+    public function frontpage_insights($survey, $rolescontextlist) {
+        global $CFG, $PAGE;
         $insightstypes = get_string('insightstypes', 'theme_academi');
         $surveycategories = $this->get_survey_categories($survey);
         $surveycategoryid = optional_param('surveycategoryid', $surveycategories[0]['slug'], PARAM_INT);
@@ -218,17 +222,15 @@ class course_renderer extends \core_course_renderer {
             'horizontalbarchart' => '',
             'piechartlabels' => $this->get_bar_chart_labels($evaluateinterpretationcount['interpretations'])
         ];
-    
-        $template['isprincipal'] = $userrole == 'principal';
-        $template['isadmin'] = $userrole == 'sel_admin';
-        $template['isteacher'] = $userrole == 'teacher';
-        $template['isstudent'] = $userrole == 'student';
+
+        $template = array_merge($template,$rolescontextlist);
+
         // Check if no pie charts data was found
         if (sizeof($livesurveyinterpretations) <= 0) {
             $template['nodatafound'] = html_writer::tag('div', get_string('nochartexist', 'theme_academi'), ['class' => 'no-chart-found alert alert-info']); 
         }
         
-        if ($userrole == 'sel_admin') {
+        if ($rolescontextlist['isadmin']) {
             return;
         }
 
