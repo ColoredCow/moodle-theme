@@ -174,6 +174,7 @@ class course_renderer extends \core_course_renderer {
         global $CFG, $DB, $USER;
         $template = ['overview'=> true];
         $template['username'] =  $USER->firstname;
+        $template['userrole'] = get_user_role();
         $template['activesurveycount'] = $activesurveycount;
         $template['totalschoolcount'] = $totalschoolcount;
 
@@ -181,11 +182,16 @@ class course_renderer extends \core_course_renderer {
     }
 
     public function quick_action() {
-        $template = ['quickaction'=> true];
+        $context = \context_system::instance();
+        $userrole = get_user_role();
+        $template = ['quickaction'=> has_capability('local/moodle_survey:view-quick-access-buttons', $context)];
         $template['createnewschool'] = new moodle_url('/blocks/iomad_company_admin/company_edit_form.php', ['createnew' => 1]);
         $helper = new \theme_academi\helper();
         $coursescategory = $helper->get_top_level_category_by_name('Courses');
         $template['createnewcourseurl'] = new \moodle_url('/course/edit.php', ['category'=>$coursescategory->id]);
+        $template['cancreatenewschool'] = has_capability('local/moodle_survey:create-school', $context);
+        $template['cancreatenewcourse'] = has_capability('local/moodle_survey:create-courses', $context);
+        $template['cancreatenewsurvey'] = has_capability('local/moodle_survey:create-surveys', $context);
         $template['createsurveyurl'] = new moodle_url('/local/moodle_survey/create_survey.php');
         $template['plusicon'] = '<img src="' . new moodle_url('/theme/academi/pix/plus-icon.svg') . '" alt="Plus Icon" class="plus-icon" />';
 
@@ -194,7 +200,8 @@ class course_renderer extends \core_course_renderer {
 
     public function frontpage_insights($survey) {
         global $CFG, $DB, $PAGE;
-        
+        $context = \context_system::instance();
+        $userrole = get_user_role();
         $insightstypes = get_string('insightstypes', 'theme_academi');
         $surveycategories = $this->get_survey_categories($survey);
         $surveycategoryid = optional_param('surveycategoryid', $surveycategories[0]['slug'], PARAM_INT);
@@ -212,11 +219,19 @@ class course_renderer extends \core_course_renderer {
             'piechartlabels' => $this->get_bar_chart_labels($evaluateinterpretationcount['interpretations'])
         ];
     
+        $template['isprincipal'] = $userrole == 'principal';
+        $template['isadmin'] = $userrole == 'sel_admin';
+        $template['isteacher'] = $userrole == 'teacher';
+        $template['isstudent'] = $userrole == 'student';
         // Check if no pie charts data was found
         if (sizeof($livesurveyinterpretations) <= 0) {
             $template['nodatafound'] = html_writer::tag('div', get_string('nochartexist', 'theme_academi'), ['class' => 'no-chart-found alert alert-info']); 
         }
-    
+        
+        if ($userrole == 'sel_admin') {
+            return;
+        }
+
         return $this->output->render_from_template("theme_academi/course_blocks", $template);
     }
     
@@ -378,11 +393,11 @@ class course_renderer extends \core_course_renderer {
         }
     }
 
-    public function get_dropdown_field($options, $PAGE, $fieldname) {
+    public function get_dropdown_field($options, $PAGE, $fieldname, $classes="") {
         $selectedValue = optional_param($fieldname, '', PARAM_ALPHANUM);
     
         $selectfieldhtml = '<form method="get" action="' . new moodle_url($PAGE->url) .'">';
-        $selectfieldhtml .= '<select name='.$fieldname.' id='.$fieldname.' class='.$fieldname.'>';
+        $selectfieldhtml .= '<select name='.$fieldname.' id='.$fieldname.' class='.$classes.'>';
     
         foreach ($options as $option) {
             $selected = ($selectedValue === $option['slug']) ? 'selected' : '';
