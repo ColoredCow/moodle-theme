@@ -278,3 +278,20 @@ $string['insightstypes'] = [
 ];
 $string['chartcolorset'] = ['#F47A29', '#FFB685', '#FFF0E6', '#FFF'];
 $string['nochartexist'] = 'Chart Data Not Available';
+$string['users'] = 'Users';
+$string['student'] = 'Student';
+$string['teacher'] = 'Teacher';
+$string['studenttablehead'] = [
+    'Name',
+    'Student ID',
+    "Grade",
+    'Grade Teacher',
+    'Assigned Courses',
+];
+$string['teadertablehead'] = [
+    'Name',
+    'Employee ID',
+    "Grade",
+    'Department',
+    'Assigned MOOCs',
+];

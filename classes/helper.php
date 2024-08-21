@@ -243,4 +243,20 @@ class helper {
 
         return $DB->count_records('company_course', ['courseid' => $course->id]);
     }
+
+    public function get_users_list_by_student_teacher() {
+        global $DB;
+        $sql = "SELECT
+                    ra.userid,
+                    u.firstname,
+                    u.id,
+                    r.shortname as rolename
+                FROM
+                    mdl_role_assignments ra
+                    LEFT JOIN mdl_user u ON ra.userid = u.id
+                    LEFT JOIN mdl_role r ON ra.roleid = r.id
+                WHERE
+                    r.shortname IN ('teacher', 'student')";
+        return $DB->get_records_sql($sql);
+    }
 }
