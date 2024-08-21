@@ -204,7 +204,7 @@ class course_renderer extends \core_course_renderer {
         $template = [
             'surveycatgories' => $this->get_dropdown_field($surveycategories, $PAGE, "surveycategoryid"),
             'insightstypes' => $this->get_dropdown_field(get_string('insightstypes', 'theme_academi'), $PAGE, "insightstype"),
-            'chart' => $this->generate_pie_charts($evaluateinterpretationcount),
+            'chart' => $this->generate_pie_charts($evaluateinterpretationcount, $evaluateinterpretationcount['interpretations']),
             'insights' => true,
             'horizontalbarchart' => '',
             'piechartlabels' => $this->get_bar_chart_labels($evaluateinterpretationcount['interpretations'])
@@ -230,17 +230,21 @@ class course_renderer extends \core_course_renderer {
         return $categories;
     }
     
-    private function generate_pie_charts($evaluationCounts) {
+    private function generate_pie_charts($evaluationCounts, $evaluateinterpretationcount) {
         $pieChartsHtml = '';
         $uniquecategoryslugs = $evaluationCounts['categories'];
         $categoryinterpretationcounts = $evaluationCounts['counts'];
-        
+        $orderedInterpretations = [];
+        foreach ($evaluateinterpretationcount as $key => $order) {
+            $orderedInterpretations[$order] = $key;
+        }
+        $labelIndexMap = $orderedInterpretations;
+        $pieChartLabels = array_keys($labelIndexMap);
+
         foreach ($uniquecategoryslugs as $categorySlug) {
             $pieChart = new chart_pie();
-            $labelIndexMap = get_string('chartlabels', 'theme_academi');
     
-            $pieChartData = array_fill(0, 4, 0);
-            $pieChartLabels = array_keys($labelIndexMap);
+            $pieChartData = array_fill(0, sizeof($pieChartLabels), 0);
     
             if (isset($categoryinterpretationcounts[$categorySlug])) {
                 foreach ($categoryinterpretationcounts[$categorySlug] as $label => $count) {
@@ -332,7 +336,7 @@ class course_renderer extends \core_course_renderer {
         $html = html_writer::start_div('pie-chart-label-container d-flex align-items-center justify-content-center');
             $html .= html_writer::start_div('d-flex align-items-center');
                     foreach ($charlabels as $key => $value) {
-                        $labelsandcolor =  $this->get_chart_label_and_color($value);
+                        $labelsandcolor =  $this->get_chart_label_and_color($key, $value);
                         $html .= html_writer::start_div('pie-chart-labels-section d-flex align-items-center');
                             $html .= html_writer::start_div('pie-chart-label-color ' . $labelsandcolor['class']);
                             $html .= html_writer::end_div();
@@ -346,27 +350,27 @@ class course_renderer extends \core_course_renderer {
         return $html;
     }
     
-    public function get_chart_label_and_color($key) {
+    public function get_chart_label_and_color($key, $value) {
         switch($key){
-            case 'Underdeveloped':
+            case 0:
                 return [
                     "class"=> 'primary-chart-color',
-                    'label' => 'Underdeveloped'
+                    'label' => $value
                 ];
-            case 'Developing':
+            case 1:
                 return [
                     "class"=> 'primary10-chart-color',
-                    'label' => 'Developing'
+                    'label' => $value
                 ];
-            case 'Progressing':
+            case 2:
                 return [
                     "class"=> 'primary100-chart-color',
-                    'label' => 'Progressing'
+                    'label' => $value
                 ];
             default:
                 return [
                     "class"=> 'secondary-chart-color',
-                    'label' => 'Remarkable'
+                    'label' => $value
                 ];
         }
     }
