@@ -204,7 +204,7 @@ class course_renderer extends \core_course_renderer {
         $template = [
             'surveycatgories' => $this->get_dropdown_field($surveycategories, $PAGE, "surveycategoryid"),
             'insightstypes' => $this->get_dropdown_field(get_string('insightstypes', 'theme_academi'), $PAGE, "insightstype"),
-            'chart' => $this->generate_pie_charts($evaluateinterpretationcount, $evaluateinterpretationcount['interpretations']),
+            'chart' => $this->generate_pie_charts($evaluateinterpretationcount),
             'insights' => true,
             'horizontalbarchart' => '',
             'piechartlabels' => $this->get_bar_chart_labels($evaluateinterpretationcount['interpretations'])
@@ -230,12 +230,12 @@ class course_renderer extends \core_course_renderer {
         return $categories;
     }
     
-    private function generate_pie_charts($evaluationCounts, $evaluateinterpretationcount) {
+    private function generate_pie_charts($evaluationCounts) {
         $pieChartsHtml = '';
         $uniquecategoryslugs = $evaluationCounts['categories'];
         $categoryinterpretationcounts = $evaluationCounts['counts'];
         $orderedInterpretations = [];
-        foreach ($evaluateinterpretationcount as $key => $order) {
+        foreach ($evaluationCounts['interpretations'] as $key => $order) {
             $orderedInterpretations[$order] = $key;
         }
         $labelIndexMap = $orderedInterpretations;
@@ -250,7 +250,8 @@ class course_renderer extends \core_course_renderer {
                 foreach ($categoryinterpretationcounts[$categorySlug] as $label => $count) {
                     if (isset($labelIndexMap[$label])) {
                         $index = $labelIndexMap[$label];
-                        $pieChartData[$index] = $count;
+                        $percentage = ($count / 100) * 100;
+                        $pieChartData[$index] = $percentage;
                     }
                 }
             }
