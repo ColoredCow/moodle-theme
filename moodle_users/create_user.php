@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <div class="form-group">
-        <label for="lastname" class="col-sm-2 control-label">Last Name</label>
+        <label for="usertype" class="col-sm-2 control-label">User Type</label>
         <div class="col-sm-10">
             <select name="category" id="category" class="form-control" required>
                 <option value="1">Principal</option>
