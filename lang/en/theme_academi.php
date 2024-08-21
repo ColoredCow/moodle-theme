@@ -276,11 +276,5 @@ $string['insightstypes'] = [
         "name" => "Student Insights"
     ]
 ];
-$string['chartlabels'] =  [
-    "Underdeveloped" => 0,
-    "Developing" => 1,
-    "Progressing" => 2,
-    "Remarkable" => 3 
-];
 $string['chartcolorset'] = ['#F47A29', '#FFB685', '#FFF0E6', '#FFF'];
 $string['nochartexist'] = 'Chart Data Not Available';
