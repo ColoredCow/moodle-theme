@@ -149,7 +149,6 @@ class course_renderer extends \core_course_renderer {
         $output = '';
         $survey = new \local_moodle_survey\model\survey();
         $audienceaccess = new \local_moodle_survey\model\audience_access();
-        $activesurveycount = $survey->get_active_survey_count();
         $totalschoolcount = $audienceaccess->get_schools_count();
         $frontpagelayout = ['overview', 'quickaction', 'insights'];
         
@@ -164,7 +163,7 @@ class course_renderer extends \core_course_renderer {
         foreach ($frontpagelayout as $section) {
             switch($section) {
                 case 'overview':
-                    $output .= $this->frontpage_overview($activesurveycount, $totalschoolcount);
+                    $output .= $this->frontpage_overview($totalschoolcount, $userroles);
                     break;
                 case 'quickaction':
                     $output .= $this->quick_action();
@@ -178,12 +177,22 @@ class course_renderer extends \core_course_renderer {
         return $output;
     }
 
-    public function frontpage_overview($activesurveycount, $totalschoolcount) {
-        global $CFG, $DB, $USER;
+    public function frontpage_overview($totalschoolcount, $rolescontextlist) {
+        global $USER;
+        $survey = new \local_moodle_survey\model\survey();
+        $schoolhelper = new \local_moodle_survey\model\school();
+        $surveycount = $survey->get_active_survey_count();
+        $enrolledstudentscount = $schoolhelper->get_enrolled_students_count();
+        $enrolledteacherscount = $schoolhelper->get_enrolled_teachers_count();
+        $coursescount = $schoolhelper->get_courses_count();
         $template = ['overview'=> true];
         $template['username'] =  $USER->firstname;
-        $template['activesurveycount'] = $activesurveycount;
+        $template['surveycount'] = $surveycount;
+        $template['enrolledstudentscount'] = $enrolledstudentscount;
+        $template['enrolledteacherscount'] = $enrolledteacherscount;
+        $template['coursescount'] = $coursescount;
         $template['totalschoolcount'] = $totalschoolcount;
+        $template = array_merge($template,$rolescontextlist);
 
         return $this->output->render_from_template("theme_academi/course_blocks", $template);
     }

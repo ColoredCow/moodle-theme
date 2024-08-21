@@ -41,22 +41,35 @@
             <p class="text-dark platform-overview">Platform Overview</p>   
         </div>
         <div class="d-flex mt-3">
+            {{#isadmin}}
             <div class="bg-light border p-3 w-25 rounded">
                 <div>Active Schools</div>
                 <div class="">{{totalschoolcount}}</div>
             </div>
-            <div class="bg-light border p-3 w-25 ml-3 rounded">
-                <div>Enrolled Students</div>
-                <div class="">4000</div>
-            </div>
+            {{/isadmin}}
             <div class="bg-light border p-3 w-25 ml-3 rounded">
                 <div>Enrolled Teachers</div>
-                <div class="">500</div>
+                <div class="">{{enrolledteacherscount}}</div>
             </div>
             <div class="bg-light border p-3 w-25 ml-3 rounded">
-                <div>Active Surveys</div>
-                <div class="">{{activesurveycount}}</div>
+                <div>Enrolled Students</div>
+                <div class="">{{enrolledstudentscount}}</div>
             </div>
+            {{#isprincipal}}
+            <div class="bg-light border p-3 w-25 ml-3 rounded">
+                <div>Running Courses</div>
+                <div class="">{{coursescount}}</div>
+            </div>
+            {{/isprincipal}}
+            
+            <div class="bg-light border p-3 w-25 ml-3 rounded">
+                <div>
+                    {{#isadmin}}Active Surveys{{/isadmin}}
+                    {{#isprincipal}}Running Surveys{{/isprincipal}}
+                </div>
+                <div class="">{{surveycount}}</div>
+            </div>
+            
         </div>
     </div>
 {{/overview}}
