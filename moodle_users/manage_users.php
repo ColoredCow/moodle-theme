@@ -40,53 +40,53 @@ function display_page($users) {
 function get_students_data($tab, $users) {
     $students = [];
     $tabledata = [];
-    foreach ($users as $user) {
-        if ($user->rolename === 'student') {
-            $students[] = $user;
-        }
-    }
-    foreach($students as $student) {
-        $tabledata[] = [
-            $student->firstname,
-            $student->id,
-            7,
-            'Mrs. Ajitha Kaur',
-            5
-        ];
-    }
     echo html_writer::start_div($tab === 'student' ? 'active' : '', ['id' => 'student']);
-    if(!empty($students)){
-        $tablehead = get_string('studenttablehead', 'theme_academi');
-        include(__DIR__ . '/templates/manage_users_table.php');
-    } else {
-        echo html_writer::tag('div', 'No Data Found.', ['class' => 'alert alert-info']);
-    }
+        foreach ($users as $user) {
+            if ($user->rolename === 'student') {
+                $students[] = $user;
+            }
+        }
+        foreach($students as $student) {
+            $tabledata[] = [
+                $student->firstname,
+                $student->id,
+                7,
+                'Mrs. Ajitha Kaur',
+                5
+            ];
+        }
+        if(!empty($students)){
+            $tablehead = get_string('studenttablehead', 'theme_academi');
+            include(__DIR__ . '/templates/manage_users_table.php');
+        } else {
+            echo html_writer::tag('div', 'No Data Found.', ['class' => 'alert alert-info']);
+        }
     echo html_writer::end_div();
 }
 
 function get_teachers_data($tab, $users) {
     $teachers = [];
     $tabledata = [];
-    foreach ($users as $user) {
-        if ($user->rolename === 'teacher') {
-            $teachers[] = $user;
-        }
-    }
-    foreach($teachers as $teacher) {
-        $tabledata[] = [
-            $teacher->firstname,
-            $teacher->id,
-            7,
-            'Physics',
-            5
-        ];
-    }
     echo html_writer::start_div($tab === 'teacher' ? 'active' : '', ['id' => 'teacher']);
-    if(!empty($teachers)){
-        $tablehead = get_string('teachertablehead', 'theme_academi');
-        include(__DIR__ . '/templates/manage_users_table.php');
-    } else {
-        echo html_writer::tag('div', 'No Data Found.', ['class' => 'alert alert-info']);
-    }
+        foreach ($users as $user) {
+            if ($user->rolename === 'teacher') {
+                $teachers[] = $user;
+            }
+        }
+        foreach($teachers as $teacher) {
+            $tabledata[] = [
+                $teacher->firstname,
+                $teacher->id,
+                7,
+                'Physics',
+                5
+            ];
+        }
+        if(!empty($teachers)){
+            $tablehead = get_string('teachertablehead', 'theme_academi');
+            include(__DIR__ . '/templates/manage_users_table.php');
+        } else {
+            echo html_writer::tag('div', 'No Data Found.', ['class' => 'alert alert-info']);
+        }
     echo html_writer::end_div();
 }

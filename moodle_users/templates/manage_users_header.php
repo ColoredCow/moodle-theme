@@ -1,7 +1,7 @@
 <?php
     $gradeoptions = [];
     $gradeteacheroptions = [];
-    $createurl = '#';
+    $createurl = new moodle_url('/theme/academi/moodle_users/create_user.php');
     $iconurl = new \moodle_url('/theme/academi/pix/plus-icon.svg');
     $createbutton = html_writer::div(
         html_writer::link(
