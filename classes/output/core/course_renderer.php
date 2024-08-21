@@ -195,15 +195,17 @@ class course_renderer extends \core_course_renderer {
     public function frontpage_insights($survey) {
         global $CFG, $DB, $PAGE;
         
+        $insightstypes = get_string('insightstypes', 'theme_academi');
         $surveycategories = $this->get_survey_categories($survey);
         $surveycategoryid = optional_param('surveycategoryid', $surveycategories[0]['slug'], PARAM_INT);
-        $livesurveyinterpretations = $survey->get_live_surveys_with_interpretations($surveycategoryid);
+        $insighttypename = optional_param('insightstype', $insightstypes[0]['slug'], PARAM_TEXT);
+        $livesurveyinterpretations = $survey->get_live_surveys_with_interpretations($surveycategoryid, $insighttypename);
         $evaluateinterpretationcount = $this->calculate_category_interpretation_counts($livesurveyinterpretations);
         $CFG->chart_colorset = get_string('chartcolorset', 'theme_academi');
         
         $template = [
             'surveycatgories' => $this->get_dropdown_field($surveycategories, $PAGE, "surveycategoryid"),
-            'insightstypes' => $this->get_dropdown_field(get_string('insightstypes', 'theme_academi'), $PAGE, "insightstype"),
+            'insightstypes' => $this->get_dropdown_field($insightstypes, $PAGE, "insightstype"),
             'chart' => $this->generate_pie_charts($evaluateinterpretationcount),
             'insights' => true,
             'horizontalbarchart' => '',
@@ -256,7 +258,7 @@ class course_renderer extends \core_course_renderer {
                 }
             }
         
-            $series = new chart_series('Insights', $pieChartData);
+            $series = new chart_series('',$pieChartData);
             $pieChart->add_series($series);
             $pieChart->set_labels($pieChartLabels);
             $pieChart->set_legend_options(['display' => false]);

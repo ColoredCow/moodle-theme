@@ -268,11 +268,11 @@ $string['createcourses'] = 'Create New Course';
 $string['school'] = 'School';
 $string['insightstypes'] = [
     [
-        "slug" => "teacherinsights",
+        "slug" => "teacher",
         "name" => "Teachers Insights"
     ],
     [
-        "slug" => "studentinsights",
+        "slug" => "student",
         "name" => "Student Insights"
     ]
 ];
