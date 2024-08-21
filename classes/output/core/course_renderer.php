@@ -209,9 +209,10 @@ class course_renderer extends \core_course_renderer {
             'horizontalbarchart' => '',
             'piechartlabels' => $this->get_bar_chart_labels($evaluateinterpretationcount['interpretations'])
         ];
+        var_dump($livesurveyinterpretations);
     
         // Check if no pie charts data was found
-        if (empty($livesurveyinterpretations)) {
+        if (sizeof($livesurveyinterpretations) <= 0) {
             $template['nodatafound'] = html_writer::tag('div', get_string('nochartexist', 'theme_academi'), ['class' => 'no-chart-found alert alert-info']); 
         }
     
