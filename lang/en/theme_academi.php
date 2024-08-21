@@ -288,7 +288,7 @@ $string['studenttablehead'] = [
     'Grade Teacher',
     'Assigned Courses',
 ];
-$string['teadertablehead'] = [
+$string['teachertablehead'] = [
     'Name',
     'Employee ID',
     "Grade",

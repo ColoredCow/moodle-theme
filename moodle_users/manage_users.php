@@ -30,7 +30,7 @@ function display_page($users) {
     if (!isset($tab)) {
         $tab = 'student';
     }
-    
+
     include(__DIR__ . '/templates/manage_users_header.php');
     
     get_students_data($tab, $users);
@@ -39,12 +39,12 @@ function display_page($users) {
 
 function get_students_data($tab, $users) {
     $students = [];
+    $tabledata = [];
     foreach ($users as $user) {
         if ($user->rolename === 'student') {
             $students[] = $user;
         }
     }
-    $tabledata[] = [];
     foreach($students as $student) {
         $tabledata[] = [
             $student->firstname,
@@ -55,7 +55,7 @@ function get_students_data($tab, $users) {
         ];
     }
     echo html_writer::start_div($tab === 'student' ? 'active' : '', ['id' => 'student']);
-    if(empty($tabledata)){
+    if(!empty($students)){
         $tablehead = get_string('studenttablehead', 'theme_academi');
         include(__DIR__ . '/templates/manage_users_table.php');
     } else {
@@ -82,7 +82,11 @@ function get_teachers_data($tab, $users) {
         ];
     }
     echo html_writer::start_div($tab === 'teacher' ? 'active' : '', ['id' => 'teacher']);
-    $tablehead = get_string('teadertablehead', 'theme_academi');
-    include(__DIR__ . '/templates/manage_users_table.php');
+    if(!empty($teachers)){
+        $tablehead = get_string('teachertablehead', 'theme_academi');
+        include(__DIR__ . '/templates/manage_users_table.php');
+    } else {
+        echo html_writer::tag('div', 'No Data Found.', ['class' => 'alert alert-info']);
+    }
     echo html_writer::end_div();
 }
