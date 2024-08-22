@@ -259,4 +259,19 @@ class helper {
                     r.shortname IN ('teacher', 'student')";
         return $DB->get_records_sql($sql);
     }
+
+    public function get_role_id_by_name($rolename) {
+        global $DB;
+        return $DB->get_record('role', ['shortname' => $rolename]);
+    }
+
+    public function create_user($record){
+        global $DB;
+        return $DB->insert_record('user', $record);
+    }
+
+    public function assign_role($record){
+        global $DB;
+        return $DB->insert_record('role_assignments', $record);
+    }
 }

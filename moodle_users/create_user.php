@@ -1,16 +1,17 @@
 <?php
 // Include necessary libraries or files for form handling
 require_once('../../../config.php');
+global $PAGE, $CFG;
+$helper = new \theme_academi\helper();
 require_login();
 
-initialize_page();
+initialize_page($PAGE);
 echo $OUTPUT->header();
 
 /**
  * Initializes the page context and resources.
  */
-function initialize_page() {
-    global $PAGE;
+function initialize_page($PAGE) {
 
     $context = context_system::instance();
     $PAGE->set_context($context);
@@ -20,7 +21,29 @@ function initialize_page() {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $result = '';
+    $systemcontext = context_system::instance();
+    $user = new stdClass();
+    $user->auth = 'manual';
+    $user->confirmed = 1;
+    $user->username = $_POST['username'];
+    $user->password = hash_internal_user_password($_POST['password']);
+    $user->firstname = $_POST['firstname'];
+    $user->lastname = $_POST['lastname'];
+    $user->email = $_POST['email'];
+    $user->timecreated = time();
+    $user->timemodified = time();
+
+    $userid = $helper->create_user($user);
+    $role = $helper->get_role_id_by_name($_POST['usertype']);
+
+    $userrole = new stdClass();
+    $userrole->roleid = $role->id;
+    $userrole->userid = $userid;
+    $userrole->contextid = $systemcontext->id;
+    $userrole->timemodified = time();
+    $userrole->modifierid = $USER->id;
+
+    $result = $helper->assign_role($userrole);
     if ($result) {
         echo '<div class="alert alert-success">User created successfully!</div>';
     } else {
@@ -73,10 +96,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="form-group">
         <label for="usertype" class="col-sm-2 control-label">User Type</label>
         <div class="col-sm-10">
-            <select name="category" id="category" class="form-control" required>
-                <option value="1">Principal</option>
-                <option value="2">Teacher</option>
-                <option value="3">Student</option>
+            <select name="usertype" id="usertype" class="form-control" required>
+                <option value="principal">Principal</option>
+                <option value="student">Student</option>
+                <option value="teacher">Teacher</option>
             </select>
         </div>
     </div>
