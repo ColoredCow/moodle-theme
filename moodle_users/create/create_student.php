@@ -42,6 +42,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userrole->contextid = $systemcontext->id;
     $userrole->timemodified = time();
     $userrole->modifierid = $USER->id;
+    
+    $usercompany = new stdClass();
+    $usercompany->userid = $userid;
+    $usercompany->companyid = get_user_school()->companyid;
+    $usercompany->managertype = 0;
+    $usercompany->departmentid = get_user_school_department()->id;
+    $usercompany->suspended = 0;
+    $usercompany->educator = 0;
+    $helper->assign_user_to_school($usercompany);
 
     $result = $helper->assign_role($userrole);
     $result = true;

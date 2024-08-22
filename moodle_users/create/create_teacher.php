@@ -43,6 +43,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userrole->timemodified = time();
     $userrole->modifierid = $USER->id;
 
+    $usercompany = new stdClass();
+    $usercompany->userid = $userid;
+    $usercompany->companyid = get_user_school()->companyid;
+    $usercompany->managertype = 0;
+    $usercompany->departmentid = get_user_school_department()->id;
+    $usercompany->suspended = 0;
+    $usercompany->educator = 0;
+    $helper->assign_user_to_school($usercompany);
+
     $result = $helper->assign_role($userrole);
     $result = true;
     if ($result) {
@@ -53,6 +62,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
+<div class="col mb-4">
+    <h2>Teachers / Add Teacher</h2>
+</div>
 <form method="POST" class="needs-validation" novalidate>
     <input name="usertype" class="d-none" value="teacher"> 
     <?php require_once('../templates/create_user_form.php') ?>

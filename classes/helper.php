@@ -244,7 +244,7 @@ class helper {
         return $DB->count_records('company_course', ['courseid' => $course->id]);
     }
 
-    public function get_users_list_by_student_teacher() {
+    public function get_users_list_by_role_for_school() {
         global $DB;
         $sql = "SELECT
                     ra.userid,
@@ -252,12 +252,15 @@ class helper {
                     u.id,
                     r.shortname as rolename
                 FROM
-                    mdl_role_assignments ra
+                    {company_users} cu
+                    JOIN {role_assignments} ra ON cu.userid = ra.userid
                     LEFT JOIN mdl_user u ON ra.userid = u.id
                     LEFT JOIN mdl_role r ON ra.roleid = r.id
                 WHERE
-                    r.shortname IN ('teacher', 'student')";
-        return $DB->get_records_sql($sql);
+                    r.shortname IN ('teacher', 'student', 'counsellor')
+                    and cu.companyid = :schoolid
+                ";
+        return $DB->get_records_sql($sql, ['schoolid' => get_user_school()->companyid]);
     }
 
     public function get_role_id_by_name($rolename) {

@@ -296,3 +296,8 @@ $string['teachertablehead'] = [
     'Department',
     'Assigned MOOCs',
 ];
+$string['counsellortablehead'] = [
+    'Name',
+    'Employee ID',
+    'Department',
+];

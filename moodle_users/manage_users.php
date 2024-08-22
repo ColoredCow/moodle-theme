@@ -9,7 +9,7 @@ $helper = new \theme_academi\helper();
 if (is_sel_admin()) {
     redirect(new moodle_url('/'));
 }
-$users = $helper->get_users_list_by_student_teacher();
+$users = $helper->get_users_list_by_role_for_school();
 echo display_page($users);
 echo html_writer::end_div();
 echo $OUTPUT->footer();
@@ -55,6 +55,7 @@ function display_page($users) {
             if (!has_capability('local/moodle_survey:view-counsellor', $context)) {
                 redirect(new moodle_url('/'));
             }
+            get_counsellors_data($tab, $users);
             break;
     }
 }
@@ -110,5 +111,30 @@ function get_teachers_data($tab, $users) {
         } else {
             echo html_writer::tag('div', 'No Data Found.', ['class' => 'alert alert-info']);
         }
+    echo html_writer::end_div();
+}
+
+function get_counsellors_data($tab, $users) {
+    $counsellors = [];
+    $tabledata = [];
+    echo html_writer::start_div($tab === 'teacher' ? 'active' : '', ['id' => 'teacher']);
+    foreach ($users as $user) {
+        if ($user->rolename === 'counsellor') {
+            $counsellors[] = $user;
+        }
+    }
+    foreach($counsellors as $counsellor) {
+        $tabledata[] = [
+            $counsellor->firstname,
+            $counsellor->id,
+            'Physics'
+        ];
+    }
+    if(!empty($counsellors)){
+        $tablehead = get_string('counsellortablehead', 'theme_academi');
+        include(__DIR__ . '/templates/manage_users_table.php');
+    } else {
+        echo html_writer::tag('div', 'No Data Found.', ['class' => 'alert alert-info']);
+    }
     echo html_writer::end_div();
 }

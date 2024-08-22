@@ -48,7 +48,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $usercompany = new stdClass();
     $usercompany->userid = $userid;
     $usercompany->companyid = get_user_school()->companyid;
-    $helper->assign_user_to_school($userrole);
+    $usercompany->managertype = 0;
+    $usercompany->departmentid = get_user_school_department()->id;
+    $usercompany->suspended = 0;
+    $usercompany->educator = 0;
+    $helper->assign_user_to_school($usercompany);
 
     if ($result) {
         redirect(new moodle_url('/theme/academi/moodle_users/manage_users.php', ['tab' => 'counsellor']));
@@ -57,6 +61,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+
+<div class="col mb-4">
+    <h2>Counsellors / Add Counsellor</h2>
+</div>
 
 <form method="POST" class="needs-validation" novalidate>
     <input name="usertype" class="d-none" value="counsellor"> 
