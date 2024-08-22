@@ -6,6 +6,9 @@ require_login();
 initialize_page();
 echo $OUTPUT->header();
 $helper = new \theme_academi\helper();
+if (is_sel_admin()) {
+    redirect(new moodle_url('/'));
+}
 $users = $helper->get_users_list_by_student_teacher();
 echo display_page($users);
 echo html_writer::end_div();
@@ -27,14 +30,33 @@ function initialize_page() {
 function display_page($users) {
     global $OUTPUT, $SESSION;
 
+    $tab = $_GET['tab'];
+    
     if (!isset($tab)) {
         $tab = 'student';
     }
-
+    $context = context_system::instance();
     include(__DIR__ . '/templates/manage_users_header.php');
-    
-    get_students_data($tab, $users);
-    get_teachers_data($tab, $users);
+
+    switch ($tab) {
+        case 'student':
+            if (!has_capability('local/moodle_survey:view-student', $context)) {
+                redirect(new moodle_url('/'));
+            }
+            get_students_data($tab, $users);
+            break;
+        case 'teacher':
+            if (!has_capability('local/moodle_survey:view-teacher', $context)) {
+                redirect(new moodle_url('/'));
+            }
+            get_teachers_data($tab, $users);
+            break;
+        case 'counsellor':
+            if (!has_capability('local/moodle_survey:view-counsellor', $context)) {
+                redirect(new moodle_url('/'));
+            }
+            break;
+    }
 }
 
 function get_students_data($tab, $users) {

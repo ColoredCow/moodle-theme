@@ -1,16 +1,26 @@
 <?php
-    if (!isset($tab)) {
-        $tab = 'student';
-    }
+    global $PAGE;
+    $context = context_system::instance();
 ?>
-
 
 <div id="tabs">
     <ul>
-        <li class="<?php echo $tab === 'student' ? 'active' : '' ?>">
-            <?php echo html_writer::link('#student', get_string('student', 'theme_academi')) ?>
-        </li>
-        <li class="<?php echo $tab === 'questions' ? 'active' : '' ?>">
-            <?php echo html_writer::link('#teacher', get_string('teacher', 'theme_academi')) ?>
-        </li>
+        <?php 
+            if (has_capability('local/moodle_survey:view-student', $context)) {
+                echo '<li class="' . ($tab === 'student' ? 'active' : '') . '">';
+                echo html_writer::link(new moodle_url($PAGE->url, ['tab' => 'student']), get_string('student', 'theme_academi'));
+                echo '</li>';
+            }
+            if (has_capability('local/moodle_survey:view-teacher', $context)) {
+                echo '<li class="' . ($tab === 'teacher' ? 'active' : '') . '">';
+                echo html_writer::link(new moodle_url($PAGE->url, ['tab' => 'teacher']), get_string('teacher', 'theme_academi'));
+                echo '</li>';
+            }
+            if (has_capability('local/moodle_survey:view-counsellor', $context)) {
+                echo '<li class="' . ($tab === 'counsellor' ? 'active' : '') . '">';
+                echo html_writer::link(new moodle_url($PAGE->url, ['tab' => 'counsellor']), get_string('counsellor', 'theme_academi'));
+                echo '</li>';
+            }
+        ?>
     </ul>
+</div>

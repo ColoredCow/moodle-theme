@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const contents = document.querySelectorAll('#tabs > div');
     tabs.forEach(tab => {
         tab.addEventListener('click', function(event) {
-            event.preventDefault();
             tabs.forEach(t => t.parentNode.classList.remove('active'));
             contents.forEach(c => c.classList.remove('active'));
 

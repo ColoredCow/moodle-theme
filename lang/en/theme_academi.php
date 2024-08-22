@@ -280,6 +280,7 @@ $string['chartcolorset'] = ['#F47A29', '#FFB685', '#FFF0E6', '#FFF'];
 $string['nochartexist'] = 'Chart Data Not Available';
 $string['users'] = 'Users';
 $string['student'] = 'Student';
+$string['counsellor'] = 'Counsellor';
 $string['teacher'] = 'Teacher';
 $string['studenttablehead'] = [
     'Name',

@@ -265,13 +265,18 @@ class helper {
         return $DB->get_record('role', ['shortname' => $rolename]);
     }
 
-    public function create_user($record){
+    public function create_user($record) {
         global $DB;
         return $DB->insert_record('user', $record);
     }
 
-    public function assign_role($record){
+    public function assign_role($record) {
         global $DB;
         return $DB->insert_record('role_assignments', $record);
+    }
+
+    public function assign_user_to_school($record) {
+        global $DB;
+        return $DB->insert_record('company_users', $record);
     }
 }

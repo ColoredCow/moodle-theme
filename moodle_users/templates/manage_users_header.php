@@ -1,12 +1,23 @@
 <?php
     $gradeoptions = [];
     $gradeteacheroptions = [];
-    $createurl = new moodle_url('/theme/academi/moodle_users/create_user.php');
+    $createurl = new moodle_url('/theme/academi/moodle_users/create/create_student.php');
+    $addbuttontext = 'Add New Student';
+    switch ($tab) {
+        case 'teacher':
+            $createurl = new moodle_url('/theme/academi/moodle_users/create/create_teacher.php');
+            $addbuttontext = 'Add New Teacher';
+            break;
+        case 'counsellor':
+            $createurl = new moodle_url('/theme/academi/moodle_users/create/create_counsellor.php');
+            $addbuttontext = 'Add New Counsellor';
+            break;
+    }
     $iconurl = new \moodle_url('/theme/academi/pix/plus-icon.svg');
     $createbutton = html_writer::div(
         html_writer::link(
             $createurl,
-            html_writer::tag('img', '', array('src' => $iconurl, 'alt' => 'Icon', 'class' => 'plus-icon')) . ' ' . 'Add New User',
+            html_writer::tag('img', '', array('src' => $iconurl, 'alt' => 'Icon', 'class' => 'plus-icon')) . ' ' . $addbuttontext,
             array('class' => 'create-button')
         ),
         'create-button-container'
