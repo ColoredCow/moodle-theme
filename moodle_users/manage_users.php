@@ -71,11 +71,11 @@ function get_students_data($tab, $users) {
         }
         foreach($students as $student) {
             $tabledata[] = [
-                $student->firstname,
-                $student->id,
-                7,
-                'Mrs. Ajitha Kaur',
-                5
+                $student->firstname . ' ' . $student->lastname,
+                $student->idnumber,
+                '-',
+                '-',
+                '-'
             ];
         }
         if(!empty($students)){
@@ -98,11 +98,11 @@ function get_teachers_data($tab, $users) {
         }
         foreach($teachers as $teacher) {
             $tabledata[] = [
-                $teacher->firstname,
-                $teacher->id,
-                7,
-                'Physics',
-                5
+                $teacher->firstname . ' ' . $teacher->lastname,
+                $teacher->idnumber,
+                '-',
+                '-',
+                '-'
             ];
         }
         if(!empty($teachers)){
@@ -125,9 +125,9 @@ function get_counsellors_data($tab, $users) {
     }
     foreach($counsellors as $counsellor) {
         $tabledata[] = [
-            $counsellor->firstname,
-            $counsellor->id,
-            'Physics'
+            $counsellor->firstname . ' ' . $counsellor->lastname,
+            $counsellor->idnumber,
+            '-'
         ];
     }
     if(!empty($counsellors)){

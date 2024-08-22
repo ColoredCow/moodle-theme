@@ -25,6 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = new stdClass();
     $user->auth = 'manual';
     $user->confirmed = 1;
+    $user->mnethostid = 1;
     $user->username = $_POST['username'];
     $user->idnumber = $_POST['employeeid'];
     $user->password = hash_internal_user_password($_POST['password']);

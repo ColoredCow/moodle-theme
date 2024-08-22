@@ -249,6 +249,8 @@ class helper {
         $sql = "SELECT
                     ra.userid,
                     u.firstname,
+                    u.lastname,
+                    u.idnumber,
                     u.id,
                     r.shortname as rolename
                 FROM
