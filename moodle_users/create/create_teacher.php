@@ -26,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user->auth = 'manual';
     $user->confirmed = 1;
     $user->username = $_POST['username'];
+    $user->idnumber = $_POST['employeeid'];
     $user->password = hash_internal_user_password($_POST['password']);
     $user->firstname = $_POST['firstname'];
     $user->lastname = $_POST['lastname'];
@@ -68,6 +69,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <form method="POST" class="needs-validation" novalidate>
     <input name="usertype" class="d-none" value="teacher"> 
     <?php require_once('../templates/create_user_form.php') ?>
+    <div class="">
+        <div class="col-auto pt-1">
+            <label for="employeeid" class="col-form-label control-label"><?php echo 'Employee ID'; ?></label>
+        </div>
+        <div class="col-3">
+            <input type="text" class="form-control" name="employeeid" id="employeeid" required>
+            <div class="invalid-feedback">
+                - Please provide a valid input.
+            </div>
+        </div>
+    </div>
+
+    <div class="pl-3 mt-4">
+        <button class="btn btn-primary" type="submit">Create</button>
+    </div>
 </form>
 
 <?php 

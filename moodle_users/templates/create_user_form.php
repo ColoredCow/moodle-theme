@@ -1,4 +1,3 @@
-<!-- Username Field -->
 <div class="">
     <div class="col-auto pt-1">
         <label for="username" class="col-form-label control-label">Username</label>
@@ -53,8 +52,4 @@
             - Please provide a valid input.
         </div>
     </div>
-</div>
-
-<div class="pl-3 mt-4">
-    <button class="btn btn-primary" type="submit">Create</button>
 </div>
