@@ -3,11 +3,23 @@
 require_once('../../../../config.php');
 global $PAGE, $CFG;
 $helper = new \theme_academi\helper();
+$schoolhelper = new \local_moodle_survey\model\school();
 require_login();
 
 initialize_page($PAGE);
 echo $OUTPUT->header();
 
+if (!is_sel_admin()) {
+    redirect(new moodle_url('/theme/academi/moodle_school/manage_school.php'));
+}
+
+$schoolid = $_GET['school'] ?? null;
+
+
+if (!$schoolid) {
+    redirect(new moodle_url('/theme/academi/moodle_school/manage_school.php'));
+}
+$school = $schoolhelper->get_school_by_id($schoolid);
 /**
  * Initializes the page context and resources.
  */
@@ -26,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user->auth = 'manual';
     $user->confirmed = 1;
     $user->username = $_POST['username'];
-    $user->idnumber = $_POST['employeeid'];
+    $user->idnumber = $_POST['employeeid'] ?? null;
     $user->mnethostid = 1;
     $user->password = hash_internal_user_password($_POST['password']);
     $user->firstname = $_POST['firstname'];
@@ -47,9 +59,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     $usercompany = new stdClass();
     $usercompany->userid = $userid;
-    $usercompany->companyid = get_user_school()->companyid;
+    $usercompany->companyid = $schoolid;
     $usercompany->managertype = 0;
-    $usercompany->departmentid = get_user_school_department()->id;
+    $usercompany->departmentid = get_user_school_department($school->shortname)->id;
     $usercompany->suspended = 0;
     $usercompany->educator = 0;
     $helper->assign_user_to_school($usercompany);
@@ -57,26 +69,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result = $helper->assign_role($userrole);
     $result = true;
     if ($result) {
-        redirect(new moodle_url('/theme/academi/moodle_users/manage_users.php', ['tab' => 'student']));
+        redirect(new moodle_url('/theme/academi/moodle_school/manage_school.php'));
     } else {
-        echo '<div class="alert alert-danger">There was an error creating the user.</div>';
+        echo '<div class="alert alert-danger">There was an error creating the school admin.</div>';
     }
 }
 ?>
 
 <div class="col mb-4">
-<h2>Students / Add Student</h2>
+<h2>School / Add School Admin</h2>
 </div>
 
 <form method="POST" class="col needs-validation" novalidate>
-    <input name="usertype" class="d-none" value="student"> 
+    <input name="usertype" class="d-none" value="schooladmin"> 
     <?php require_once('../templates/create_user_form.php') ?>
     <div class="">
         <div class="col-auto pt-1">
-            <label for="employeeid" class="col-form-label control-label"><?php echo 'Student ID'; ?></label>
+            <label for="employeeid" class="col-form-label control-label"><?php echo 'Employee ID'; ?></label>
         </div>
         <div class="col-3">
-            <input type="text" class="form-control" name="employeeid" id="employeeid" required>
+            <input type="text" class="form-control" name="employeeid" id="employeeid">
             <div class="invalid-feedback">
                 - Please provide a valid input.
             </div>
