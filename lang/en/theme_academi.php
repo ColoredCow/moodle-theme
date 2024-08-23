@@ -282,6 +282,7 @@ $string['users'] = 'Users';
 $string['student'] = 'Student';
 $string['counsellor'] = 'Counsellor';
 $string['teacher'] = 'Teacher';
+$string['principal'] = 'Principal';
 $string['studenttablehead'] = [
     'Name',
     'Student ID',

@@ -21,6 +21,11 @@
                 echo html_writer::link(new moodle_url($PAGE->url, ['tab' => 'counsellor']), get_string('counsellor', 'theme_academi'));
                 echo '</li>';
             }
+            if (has_capability('local/moodle_survey:view-principal', $context)) {
+                echo '<li class="' . ($tab === 'principal' ? 'active' : '') . '">';
+                echo html_writer::link(new moodle_url($PAGE->url, ['tab' => 'principal']), get_string('principal', 'theme_academi'));
+                echo '</li>';
+            }
         ?>
     </ul>
 </div>

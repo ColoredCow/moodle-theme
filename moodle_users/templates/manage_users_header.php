@@ -12,6 +12,10 @@
             $createurl = new moodle_url('/theme/academi/moodle_users/create/create_counsellor.php');
             $addbuttontext = 'Add New Counsellor';
             break;
+        case 'principal':
+            $createurl = new moodle_url('/theme/academi/moodle_users/create/create_principal.php');
+            $addbuttontext = 'Add New Principal';
+            break;
     }
     $iconurl = new \moodle_url('/theme/academi/pix/plus-icon.svg');
     $createbutton = html_writer::div(
