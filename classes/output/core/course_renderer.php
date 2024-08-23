@@ -263,62 +263,66 @@ class course_renderer extends \core_course_renderer {
         $uniquecategoryslugs = $evaluationCounts['categories'];
         $categoryinterpretationcounts = $evaluationCounts['counts'];
         $orderedInterpretations = [];
+        
         foreach ($evaluationCounts['interpretations'] as $key => $order) {
             $orderedInterpretations[$order] = $key;
         }
+        
         $labelIndexMap = $orderedInterpretations;
         $pieChartLabels = array_keys($labelIndexMap);
-
+    
         foreach ($uniquecategoryslugs as $categorySlug) {
             $pieChart = new chart_pie();
     
             $pieChartData = array_fill(0, sizeof($pieChartLabels), 0);
     
             if (isset($categoryinterpretationcounts[$categorySlug])) {
+                $totalResponses = array_sum($categoryinterpretationcounts[$categorySlug]);
                 foreach ($categoryinterpretationcounts[$categorySlug] as $label => $count) {
                     if (isset($labelIndexMap[$label])) {
                         $index = $labelIndexMap[$label];
-                        $percentage = ($count / 100) * 100;
+                        $percentage = ($count / $totalResponses) * 100;
                         $pieChartData[$index] = $percentage;
                     }
                 }
             }
-        
-            $series = new chart_series('',$pieChartData);
+    
+            $series = new chart_series('', $pieChartData);
             $pieChart->add_series($series);
             $pieChart->set_labels($pieChartLabels);
             $pieChart->set_legend_options(['display' => false]);
             $pieChart->set_title($categorySlug);
-            
+    
             $pieChartHtml = $this->output->render_chart($pieChart, false);
             $pieChartsHtml .= $pieChartHtml;
         }
-        
+    
         return $pieChartsHtml;
-    }
+    }    
 
     public function calculate_category_interpretation_counts($liveSurveyInterpretations) {
         $uniqueCategories = [];
         $categoryCounts = [];
         $interpretations = [];
-
         foreach ($liveSurveyInterpretations as $item) {
             $surveyResponses = json_decode($item->survey_responses, true);
-            
-            // Extract unique question categories
-            foreach ($surveyResponses['surveyData']['categoriesScores'] as $category) {
-                if (!isset($uniqueCategories[$category['catgororySlug']])) {
-                    $uniqueCategories[$category['catgororySlug']] = $category['catgororySlug'];
-                    $categoryCounts[$category['catgororySlug']] = [];
+    
+            // Extract unique question categories and initialize interpretation counts
+            foreach ($surveyResponses['surveyData']['interpretations'] as $categories) {
+                foreach ($categories as $category) {
+                    $categorySlug = $category['catgororySlug'];
+                    if (!isset($uniqueCategories[$categorySlug])) {
+                        $uniqueCategories[$categorySlug] = $categorySlug;
+                        $categoryCounts[$categorySlug] = [];
+                    }
                 }
             }
-            
-            // Interpretations count for each question category
+    
             foreach ($surveyResponses as $key => $response) {
                 if (is_array($response) && isset($response['questionCategorySlug']) && isset($response['interpretation'])) {
                     $categorySlug = $response['questionCategorySlug'];
                     $interpretation = $response['interpretation'];
-                    
+    
                     if (isset($categoryCounts[$categorySlug])) {
                         if (!isset($categoryCounts[$categorySlug][$interpretation])) {
                             $categoryCounts[$categorySlug][$interpretation] = 0;
@@ -336,7 +340,7 @@ class course_renderer extends \core_course_renderer {
                 }
             }
         }
-
+    
         return [
             'categories' => $uniqueCategories,
             'counts' => $categoryCounts,
@@ -363,18 +367,18 @@ class course_renderer extends \core_course_renderer {
     public function get_bar_chart_labels($labels) {
         $charlabels = $labels;
         $html = html_writer::start_div('pie-chart-label-container d-flex align-items-center justify-content-center');
-            $html .= html_writer::start_div('d-flex align-items-center');
-                    foreach ($charlabels as $key => $value) {
-                        $labelsandcolor =  $this->get_chart_label_and_color($key, $value);
-                        $html .= html_writer::start_div('pie-chart-labels-section d-flex align-items-center');
-                            $html .= html_writer::start_div('pie-chart-label-color ' . $labelsandcolor['class']);
-                            $html .= html_writer::end_div();
-                            $html .= html_writer::start_div();
-                                $html .= html_writer::tag('span', $labelsandcolor['label'], array('class' => 'pie-chart-label'));
-                            $html .= html_writer::end_div();
-                        $html .= html_writer::end_div();
-                    }
+        $html .= html_writer::start_div('d-flex align-items-center');
+        foreach ($charlabels as $key => $value) {
+            $labelsandcolor =  $this->get_chart_label_and_color($key, $value);
+            $html .= html_writer::start_div('pie-chart-labels-section d-flex align-items-center');
+            $html .= html_writer::start_div('pie-chart-label-color ' . $labelsandcolor['class']);
             $html .= html_writer::end_div();
+            $html .= html_writer::start_div();
+            $html .= html_writer::tag('span', $labelsandcolor['label'], array('class' => 'pie-chart-label'));
+            $html .= html_writer::end_div();
+            $html .= html_writer::end_div();
+        }
+        $html .= html_writer::end_div();
         $html .= html_writer::end_div();
         return $html;
     }
