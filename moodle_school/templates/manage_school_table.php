@@ -19,12 +19,19 @@ if(isset($schoolid)) {
 }
 
 foreach($schools as $school) {
+    $schooladmin = $helper->get_school_admin($school->id) ?? null;
     $table->data[] = [
         get_school_edit_page_link($school),
         $school->address,
         $school->city,
-        'John Doe',
-        'dps.delhi@gmail.com',
+        $schooladmin ? $schooladmin->firstname . ' ' . $schooladmin->lastname : html_writer::div(
+            html_writer::link(
+                new moodle_url('/theme/academi/moodle_users/create/create_school_admin.php', ['school' => $school->id]),
+                'Add admin',
+                array('class' => 'add-school-admin-button')
+            )
+        ),
+        '-',
         html_writer::span('Active', "badge badge-pill badge-color survey-status survey-live")
     ];
 }

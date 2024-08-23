@@ -225,6 +225,25 @@ class helper {
         global $DB;
         return $DB->get_records('company', []);
     }
+    
+    public function get_school_admin(int $schoolid) {
+        global $DB;
+        $sql = "SELECT
+                    ra.userid,
+                    u.firstname,
+                    u.lastname,
+                    u.idnumber,
+                    r.shortname as rolename
+                FROM
+                    {company_users} cu
+                    JOIN {role_assignments} ra ON cu.userid = ra.userid
+                    LEFT JOIN mdl_user u ON ra.userid = u.id
+                    LEFT JOIN mdl_role r ON ra.roleid = r.id
+                WHERE
+                    r.shortname = 'schooladmin'
+                    and cu.companyid = :schoolid";
+        return $DB->get_record_sql($sql, ['schoolid' => $schoolid]);
+    }
 
     public function get_category_of_course($course) {
         global $DB;
