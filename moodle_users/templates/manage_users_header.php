@@ -1,31 +1,38 @@
 <?php
+    $context = context_system::instance();
     $gradeoptions = [];
     $gradeteacheroptions = [];
     $createurl = new moodle_url('/theme/academi/moodle_users/create/create_student.php');
     $addbuttontext = 'Add New Student';
+    $hascapabilitytocreate = has_capability('local/moodle_survey:create-student', $context);
     switch ($tab) {
         case 'teacher':
+            $hascapabilitytocreate = has_capability('local/moodle_survey:create-teacher', $context);
             $createurl = new moodle_url('/theme/academi/moodle_users/create/create_teacher.php');
             $addbuttontext = 'Add New Teacher';
             break;
         case 'counsellor':
+            $hascapabilitytocreate = has_capability('local/moodle_survey:create-counsellor', $context);
             $createurl = new moodle_url('/theme/academi/moodle_users/create/create_counsellor.php');
             $addbuttontext = 'Add New Counsellor';
             break;
         case 'principal':
+            $hascapabilitytocreate = has_capability('local/moodle_survey:create-principal', $context);
             $createurl = new moodle_url('/theme/academi/moodle_users/create/create_principal.php');
             $addbuttontext = 'Add New Principal';
             break;
     }
     $iconurl = new \moodle_url('/theme/academi/pix/plus-icon.svg');
-    $createbutton = html_writer::div(
-        html_writer::link(
-            $createurl,
-            html_writer::tag('img', '', array('src' => $iconurl, 'alt' => 'Icon', 'class' => 'plus-icon')) . ' ' . $addbuttontext,
-            array('class' => 'create-button')
-        ),
-        'create-button-container'
-    );
+    if ($hascapabilitytocreate) {
+        $createbutton = html_writer::div(
+            html_writer::link(
+                $createurl,
+                html_writer::tag('img', '', array('src' => $iconurl, 'alt' => 'Icon', 'class' => 'plus-icon')) . ' ' . $addbuttontext,
+                array('class' => 'create-button')
+            ),
+            'create-button-container'
+        );
+    }
     $heading = html_writer::tag('span', get_string('users', 'theme_academi'), ['class' => 'page-title']);
     $content = $heading . ' ' . $createbutton;
     echo html_writer::tag('div', $content, ['class' => 'survey-header']);
