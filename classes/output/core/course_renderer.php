@@ -215,6 +215,15 @@ class course_renderer extends \core_course_renderer {
 
     public function frontpage_insights($survey, $rolescontextlist) {
         global $CFG, $PAGE;
+
+        if (in_array(true, [
+            $rolescontextlist['isteacher'],
+            $rolescontextlist['isadmin'],
+            $rolescontextlist['isstudent']
+        ])) {
+            return;
+        }
+
         $insightstypes = get_string('insightstypes', 'theme_academi');
         $surveycategories = $this->get_survey_categories($survey);
         $surveycategoryid = optional_param('surveycategoryid', $surveycategories[0]['slug'], PARAM_INT);
@@ -233,14 +242,10 @@ class course_renderer extends \core_course_renderer {
         ];
 
         $template = array_merge($template,$rolescontextlist);
+        $ispiechartdatavailable = sizeof($evaluateinterpretationcount['categories']) > 0 || sizeof($evaluateinterpretationcount['counts']) > 0;
 
-        // Check if no pie charts data was found
-        if (sizeof($livesurveyinterpretations) <= 0) {
+        if (!$ispiechartdatavailable) {
             $template['nodatafound'] = html_writer::tag('div', get_string('nochartexist', 'theme_academi'), ['class' => 'no-chart-found alert alert-info']); 
-        }
-        
-        if ($rolescontextlist['isadmin']) {
-            return;
         }
 
         return $this->output->render_from_template("theme_academi/course_blocks", $template);
@@ -260,83 +265,68 @@ class course_renderer extends \core_course_renderer {
     
     private function generate_pie_charts($evaluationCounts) {
         $pieChartsHtml = '';
-        $uniquecategoryslugs = $evaluationCounts['categories'];
-        $categoryinterpretationcounts = $evaluationCounts['counts'];
-        $orderedInterpretations = [];
-        
-        foreach ($evaluationCounts['interpretations'] as $key => $order) {
-            $orderedInterpretations[$order] = $key;
-        }
-        
-        $labelIndexMap = $orderedInterpretations;
-        $pieChartLabels = array_keys($labelIndexMap);
+        $uniqueCategorySlugs = $evaluationCounts['categories'];
+        $categoryInterpretationCounts = $evaluationCounts['counts'];
     
-        foreach ($uniquecategoryslugs as $categorySlug) {
-            $pieChart = new chart_pie();
+        foreach ($uniqueCategorySlugs as $categorySlug) {
+            if (isset($categoryInterpretationCounts[$categorySlug])) {
+                $interpretationCounts = $categoryInterpretationCounts[$categorySlug];
+                
+                // Calculate the total count for this category
+                $total = array_sum($interpretationCounts);
+                
+                // Prepare data for the pie chart
+                $pieChartLabels = array_keys($interpretationCounts);
+                $pieChartData = array_map(function($count) use ($total) {
+                    return ($count / $total) * 100;  // Convert count to percentage
+                }, array_values($interpretationCounts));
     
-            $pieChartData = array_fill(0, sizeof($pieChartLabels), 0);
-    
-            if (isset($categoryinterpretationcounts[$categorySlug])) {
-                $totalResponses = array_sum($categoryinterpretationcounts[$categorySlug]);
-                foreach ($categoryinterpretationcounts[$categorySlug] as $label => $count) {
-                    if (isset($labelIndexMap[$label])) {
-                        $index = $labelIndexMap[$label];
-                        $percentage = ($count / $totalResponses) * 100;
-                        $pieChartData[$index] = $percentage;
-                    }
-                }
+                // Create the pie chart
+                $pieChart = new chart_pie();
+                $series = new chart_series('', $pieChartData);
+                $pieChart->add_series($series);
+                $pieChart->set_labels($pieChartLabels);
+                $pieChart->set_legend_options(['display' => false]);
+                $pieChart->set_title($categorySlug);
+                
+                // Render and append the chart HTML
+                $pieChartsHtml .= $this->output->render_chart($pieChart, false);
             }
-    
-            $series = new chart_series('', $pieChartData);
-            $pieChart->add_series($series);
-            $pieChart->set_labels($pieChartLabels);
-            $pieChart->set_legend_options(['display' => false]);
-            $pieChart->set_title($categorySlug);
-    
-            $pieChartHtml = $this->output->render_chart($pieChart, false);
-            $pieChartsHtml .= $pieChartHtml;
         }
     
         return $pieChartsHtml;
-    }    
+    }
 
     public function calculate_category_interpretation_counts($liveSurveyInterpretations) {
         $uniqueCategories = [];
         $categoryCounts = [];
         $interpretations = [];
-        foreach ($liveSurveyInterpretations as $item) {
+    
+        foreach($liveSurveyInterpretations as $item) {
             $surveyResponses = json_decode($item->survey_responses, true);
-    
-            // Extract unique question categories and initialize interpretation counts
-            foreach ($surveyResponses['surveyData']['interpretations'] as $categories) {
-                foreach ($categories as $category) {
-                    $categorySlug = $category['catgororySlug'];
-                    if (!isset($uniqueCategories[$categorySlug])) {
-                        $uniqueCategories[$categorySlug] = $categorySlug;
-                        $categoryCounts[$categorySlug] = [];
-                    }
-                }
-            }
-    
-            foreach ($surveyResponses as $key => $response) {
-                if (is_array($response) && isset($response['questionCategorySlug']) && isset($response['interpretation'])) {
-                    $categorySlug = $response['questionCategorySlug'];
-                    $interpretation = $response['interpretation'];
-    
-                    if (isset($categoryCounts[$categorySlug])) {
-                        if (!isset($categoryCounts[$categorySlug][$interpretation])) {
-                            $categoryCounts[$categorySlug][$interpretation] = 0;
+            foreach($surveyResponses as $response) {
+                $surveyCategoryInterpretations = $response['interpretations'];
+                
+                foreach ($surveyCategoryInterpretations as $interpretation) {
+                    foreach ($interpretation as $categorySlug => $details) {
+                        $text = $details['text'];
+                        
+                        // Add the categorySlug to unique categories if not already added
+                        if (!in_array($categorySlug, $uniqueCategories)) {
+                            $uniqueCategories[] = $categorySlug;
                         }
-                        $categoryCounts[$categorySlug][$interpretation]++;
+    
+                        // Initialize the count array if not already set
+                        if (!isset($categoryCounts[$categorySlug])) {
+                            $categoryCounts[$categorySlug] = [];
+                        }
+    
+                        // Count the occurrences of each interpretation text
+                        if (!isset($categoryCounts[$categorySlug][$text])) {
+                            $categoryCounts[$categorySlug][$text] = 0;
+                        }
+                        $categoryCounts[$categorySlug][$text]++;
                     }
-                }
-            }
-        }
-
-        foreach ($categoryCounts as $category => $interpretationCounts) {
-            foreach ($interpretationCounts as $interpretation => $count) {
-                if (!in_array($interpretation, $interpretations)) {
-                    $interpretations[] = $interpretation;
                 }
             }
         }
@@ -346,7 +336,7 @@ class course_renderer extends \core_course_renderer {
             'counts' => $categoryCounts,
             'interpretations' => $interpretations
         ];
-    }
+    }    
 
     // This function not used for now.
     public function get_horizontal_bar_chart($underdeveloped, $developing, $remarkeble) {
