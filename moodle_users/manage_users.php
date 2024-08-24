@@ -57,6 +57,12 @@ function display_page($users) {
             }
             get_counsellors_data($tab, $users);
             break;
+        case 'principal':
+            if (!has_capability('local/moodle_survey:view-principal', $context)) {
+                redirect(new moodle_url('/'));
+            }
+            get_principals_data($tab, $users);
+            break;
     }
 }
 
@@ -132,6 +138,30 @@ function get_counsellors_data($tab, $users) {
     }
     if(!empty($counsellors)){
         $tablehead = get_string('counsellortablehead', 'theme_academi');
+        include(__DIR__ . '/templates/manage_users_table.php');
+    } else {
+        echo html_writer::tag('div', 'No Data Found.', ['class' => 'alert alert-info']);
+    }
+    echo html_writer::end_div();
+}
+
+function get_principals_data($tab, $users) {
+    $counsellors = [];
+    $tabledata = [];
+    echo html_writer::start_div($tab === 'teacher' ? 'active' : '', ['id' => 'teacher']);
+    foreach ($users as $user) {
+        if ($user->rolename === 'principal') {
+            $counsellors[] = $user;
+        }
+    }
+    foreach($counsellors as $counsellor) {
+        $tabledata[] = [
+            $counsellor->firstname . ' ' . $counsellor->lastname,
+            $counsellor->idnumber,
+        ];
+    }
+    if(!empty($counsellors)){
+        $tablehead = get_string('principaltablehead', 'theme_academi');
         include(__DIR__ . '/templates/manage_users_table.php');
     } else {
         echo html_writer::tag('div', 'No Data Found.', ['class' => 'alert alert-info']);

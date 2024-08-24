@@ -302,3 +302,7 @@ $string['counsellortablehead'] = [
     'Employee ID',
     'Department',
 ];
+$string['principaltablehead'] = [
+    'Name',
+    'Employee ID',
+];

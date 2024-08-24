@@ -278,7 +278,7 @@ class helper {
                     LEFT JOIN mdl_user u ON ra.userid = u.id
                     LEFT JOIN mdl_role r ON ra.roleid = r.id
                 WHERE
-                    r.shortname IN ('teacher', 'student', 'counsellor')
+                    r.shortname IN ('teacher', 'student', 'counsellor', 'principal')
                     and cu.companyid = :schoolid
                 ";
         return $DB->get_records_sql($sql, ['schoolid' => get_user_school()->companyid]);
