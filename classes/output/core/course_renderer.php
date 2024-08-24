@@ -215,6 +215,15 @@ class course_renderer extends \core_course_renderer {
 
     public function frontpage_insights($survey, $rolescontextlist) {
         global $CFG, $PAGE;
+
+        if (in_array(true, [
+            $rolescontextlist['isteacher'],
+            $rolescontextlist['isadmin'],
+            $rolescontextlist['isstudent']
+        ])) {
+            return;
+        }
+
         $insightstypes = get_string('insightstypes', 'theme_academi');
         $surveycategories = $this->get_survey_categories($survey);
         $surveycategoryid = optional_param('surveycategoryid', $surveycategories[0]['slug'], PARAM_INT);
@@ -237,10 +246,6 @@ class course_renderer extends \core_course_renderer {
         // Check if no pie charts data was found
         if (sizeof($livesurveyinterpretations) <= 0) {
             $template['nodatafound'] = html_writer::tag('div', get_string('nochartexist', 'theme_academi'), ['class' => 'no-chart-found alert alert-info']); 
-        }
-        
-        if ($rolescontextlist['isadmin']) {
-            return;
         }
 
         return $this->output->render_from_template("theme_academi/course_blocks", $template);
