@@ -400,31 +400,6 @@ class course_renderer extends \core_course_renderer {
         $html .= html_writer::end_div();
         return $html;
     }
-    
-    public function get_chart_label_and_color($key, $value) {
-        switch($key){
-            case 0:
-                return [
-                    "class"=> 'primary-chart-color',
-                    'label' => $value
-                ];
-            case 1:
-                return [
-                    "class"=> 'primary10-chart-color',
-                    'label' => $value
-                ];
-            case 2:
-                return [
-                    "class"=> 'primary100-chart-color',
-                    'label' => $value
-                ];
-            default:
-                return [
-                    "class"=> 'secondary-chart-color',
-                    'label' => $value
-                ];
-        }
-    }
 
     public function get_dropdown_field($options, $PAGE, $fieldname, $classes="") {
         $selectedValue = optional_param($fieldname, '', PARAM_ALPHANUM);
