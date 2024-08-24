@@ -238,7 +238,7 @@ class course_renderer extends \core_course_renderer {
             'chart' => $this->generate_pie_charts($evaluateinterpretationcount),
             'insights' => true,
             'horizontalbarchart' => '',
-            'piechartlabels' => $this->get_bar_chart_labels($evaluateinterpretationcount['interpretations'])
+            'piechartlabels' => $this->get_bar_chart_labels($evaluateinterpretationcount['counts'])
         ];
 
         $template = array_merge($template,$rolescontextlist);
@@ -264,9 +264,12 @@ class course_renderer extends \core_course_renderer {
     }
     
     private function generate_pie_charts($evaluationCounts) {
+        global $CFG;
         $pieChartsHtml = '';
         $uniqueCategorySlugs = $evaluationCounts['categories'];
         $categoryInterpretationCounts = $evaluationCounts['counts'];
+        $colors = $CFG->chart_colorset;
+        $usedColors = [];
     
         foreach ($uniqueCategorySlugs as $categorySlug) {
             if (isset($categoryInterpretationCounts[$categorySlug])) {
@@ -280,10 +283,25 @@ class course_renderer extends \core_course_renderer {
                 $pieChartData = array_map(function($count) use ($total) {
                     return ($count / $total) * 100;  // Convert count to percentage
                 }, array_values($interpretationCounts));
-    
+                $assignedColors = [];
+
+                foreach ($pieChartLabels as $label) {
+                    foreach ($colors as $color) {
+                        if($usedColors[$label] == $color) {
+                            $assignedColors[$label] = $color;
+                            break;
+                        } else if (!in_array($color, $usedColors)) {
+                            $assignedColors[$label] = $color;
+                            $usedColors[$label] = $color;
+                            break;
+                        }
+                    }
+                }
+
                 // Create the pie chart
                 $pieChart = new chart_pie();
                 $series = new chart_series('', $pieChartData);
+                $series->set_colors(array_values($assignedColors));
                 $pieChart->add_series($series);
                 $pieChart->set_labels($pieChartLabels);
                 $pieChart->set_legend_options(['display' => false]);
@@ -354,17 +372,27 @@ class course_renderer extends \core_course_renderer {
         return $chartbar;
     }
 
-    public function get_bar_chart_labels($labels) {
-        $charlabels = $labels;
+    public function get_bar_chart_labels($chartlabels) {
+        global $CFG;
+        $colors = $CFG->chart_colorset;
+        $intrerpretations = [];
         $html = html_writer::start_div('pie-chart-label-container d-flex align-items-center justify-content-center');
         $html .= html_writer::start_div('d-flex align-items-center');
-        foreach ($charlabels as $key => $value) {
-            $labelsandcolor =  $this->get_chart_label_and_color($key, $value);
+        $colorIndex = 0;
+        foreach($chartlabels as $key => $chartlabel) {
+            foreach($chartlabel as $label => $count) {
+                if (!in_array($label, $intrerpretations) && $colorIndex < count($colors)) {
+                    $intrerpretations[$colors[$colorIndex]] = $label;
+                    $colorIndex++;
+                }
+            }
+        }
+        foreach ($intrerpretations as $key => $value) {
             $html .= html_writer::start_div('pie-chart-labels-section d-flex align-items-center');
-            $html .= html_writer::start_div('pie-chart-label-color ' . $labelsandcolor['class']);
+            $html .= html_writer::start_div('pie-chart-label-color', ['style' => 'background-color: ' . $key]);
             $html .= html_writer::end_div();
             $html .= html_writer::start_div();
-            $html .= html_writer::tag('span', $labelsandcolor['label'], array('class' => 'pie-chart-label'));
+            $html .= html_writer::tag('span', $value, ['class' => 'pie-chart-label']);
             $html .= html_writer::end_div();
             $html .= html_writer::end_div();
         }
