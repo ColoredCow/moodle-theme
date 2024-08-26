@@ -2,7 +2,9 @@
 
 require_once('../../../config.php');
 require_login();
-
+if (!has_capability('local/moodle_survey:view-school', context_system::instance())) {
+    redirect(new moodle_url('/'));
+}
 initialize_page();
 echo $OUTPUT->header();
 $helper = new \theme_academi\helper();
