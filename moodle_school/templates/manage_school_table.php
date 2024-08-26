@@ -32,7 +32,7 @@ foreach($schools as $school) {
                 array('class' => 'add-school-admin-button')
             )
         ),
-        '-',
+        $schooladmin ? $schooladmin->email : '-',
         html_writer::span('Active', "badge badge-pill badge-color survey-status survey-live")
     ];
 }
