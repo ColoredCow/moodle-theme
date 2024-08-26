@@ -61,14 +61,24 @@
                 <div class="">{{coursescount}}</div>
             </div>
             {{/isprincipal}}
-            
+
+            {{#isadmin}}
             <div class="bg-light border p-3 w-25 ml-3 rounded">
                 <div>
-                    {{#isadmin}}Active Surveys{{/isadmin}}
-                    {{#isprincipal}}Running Surveys{{/isprincipal}}
+                    Active Surveys
                 </div>
                 <div class="">{{surveycount}}</div>
             </div>
+            {{/isadmin}}
+
+            {{#isprincipal}}
+            <div class="bg-light border p-3 w-25 ml-3 rounded">
+                <div>
+                    Running Surveys
+                </div>
+                <div class="">{{surveycount}}</div>
+            </div>
+            {{/isprincipal}}
             
         </div>
     </div>
