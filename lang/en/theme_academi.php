@@ -276,7 +276,7 @@ $string['insightstypes'] = [
         "name" => "Student Insights"
     ]
 ];
-$string['chartcolorset'] = ['#F47A29', '#FFB685', '#FFF0E6', '#FFF'];
+$string['chartcolorset'] = ['#F47A29', '#FFB685', '#FFF0E6', '#FFF','#E65100', '#FF8A65', '#FFE0B2', '#FBE9E7', '#F57C00', '#FFAB91', '#FFF3E0', '#D84315','#FF7043', '#FFCCBC', '#EF6C00', '#FB8C00', '#FFB74D', '#FFECB3', '#FFF8E1' ];
 $string['nochartexist'] = 'Chart Data Not Available';
 $string['users'] = 'Users';
 $string['student'] = 'Student';
