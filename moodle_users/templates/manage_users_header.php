@@ -44,10 +44,11 @@
 
     echo html_writer::start_tag('form', ['method' => 'get', 'action' => $PAGE->url, 'id' => 'filter-form']);
     echo html_writer::start_div('filter-form d-flex justify-content-between');
-    echo html_writer::select($gradeteacheroptions, 'status', $status, null, ['class' => 'status-select', 'id' => 'status-select']);
-    echo html_writer::select($gradeoptions, 'category', $moocscategory, null, ['class' => 'status-select', 'id' => 'category-select']);
+    // echo html_writer::select($gradeteacheroptions, 'status', $status, null, ['class' => 'status-select', 'id' => 'status-select']);
+    // echo html_writer::select($gradeoptions, 'category', $moocscategory, null, ['class' => 'status-select', 'id' => 'category-select']);
 
-    echo html_writer::empty_tag('input', ['type' => 'text', 'name' => 'search', 'value' => $search, 'placeholder' => get_string('search', 'local_moodle_survey'), 'class' => 'search-input']);
+    echo html_writer::empty_tag('input', ['type' => 'text', 'name' => 'tab', 'value' => $tab, 'class' => 'd-none']);
+    echo html_writer::empty_tag('input', ['type' => 'text', 'name' => 'search', 'value' => $filters['name'], 'placeholder' => get_string('search', 'local_moodle_survey'), 'class' => 'search-input']);
 
     echo html_writer::end_div();
     echo html_writer::end_tag('form');
@@ -55,25 +56,15 @@
     // JavaScript for automatic form submission
     echo html_writer::script("
         document.addEventListener('DOMContentLoaded', function() {
-            var statusSelect = document.getElementById('status-select');
-            var categorySelect = document.getElementById('category-select');
-            var dateInput = document.querySelector('.date-input');
+            var searchInput = document.querySelector('.search-input');
             var form = document.getElementById('filter-form');
 
             function submitForm() {
                 form.submit();
             }
 
-            if (statusSelect) {
-                statusSelect.addEventListener('change', submitForm);
-            }
-
-            if (categorySelect) {
-                categorySelect.addEventListener('change', submitForm);
-            }
-
-            if (dateInput) {
-                dateInput.addEventListener('change', submitForm);
+            if (searchInput) {
+                searchInput.addEventListener('change', submitForm);
             }
         });
     ");

@@ -6,8 +6,17 @@ require_login();
 initialize_page();
 echo $OUTPUT->header();
 $helper = new \theme_academi\helper();
-$users = $helper->get_users_list_by_role_for_school();
-echo display_page($users);
+$filters = [
+    "name" => optional_param('search', '', PARAM_TEXT)
+];
+
+$users = [];
+if (!is_sel_admin()) {
+    $users = $helper->get_users_list_by_role_for_school($filters);
+} else {
+    $users = $helper->get_school_admins($filters);
+}
+echo display_page($users, $filters);
 echo html_writer::end_div();
 echo $OUTPUT->footer();
 
@@ -24,7 +33,7 @@ function initialize_page() {
     $PAGE->requires->js(new moodle_url('/theme/academi/moodle_users/js/tabs.js'));
 }
 
-function display_page($users) {
+function display_page($users, $filters) {
     global $PAGE;
     $helper = new \theme_academi\helper();
     $tab = $_GET['tab'];
@@ -64,7 +73,7 @@ function display_page($users) {
             if (!has_capability('local/moodle_survey:view-school-admin', $context)) {
                 redirect(new moodle_url($PAGE->url, ['tab' => 'student']));
             }
-            get_school_admins_data($tab, $helper);
+            get_school_admins_data($tab, $users);
             break;
     }
 }
@@ -196,12 +205,12 @@ function get_principals_data($tab, $users) {
     echo html_writer::end_div();
 }
 
-function get_school_admins_data($tab, $helper) {
+function get_school_admins_data($tab, $users) {
     $context = context_system::instance();
     $tabledata = [];
     echo html_writer::start_div($tab === 'school_admin' ? 'active' : '', ['id' => 'school_admin']);
-    $schooladmins = $helper->get_school_admins();
-    foreach($schooladmins as $schooladmin) {
+   
+    foreach($users as $schooladmin) {
         $name = $schooladmin->firstname . ' ' . $schooladmin->lastname; {
             if (has_capability('local/moodle_survey:create-school-admin', $context)) {
                 $editurl = new moodle_url('/theme/academi/moodle_users/edit/edit_school_admin.php', ['id' => $schooladmin->userid]);
@@ -214,7 +223,7 @@ function get_school_admins_data($tab, $helper) {
             $schooladmin->idnumber,
         ];
     }
-    if(!empty($schooladmins)){
+    if(!empty($users)){
         $tablehead = get_string('schooladmintablehead', 'theme_academi');
         include(__DIR__ . '/templates/manage_users_table.php');
     } else {

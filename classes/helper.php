@@ -263,7 +263,7 @@ class helper {
         return $DB->count_records('company_course', ['courseid' => $course->id]);
     }
 
-    public function get_users_list_by_role_for_school() {
+    public function get_users_list_by_role_for_school($filters) {
         global $DB;
         $sql = "SELECT
                     ra.userid,
@@ -280,8 +280,17 @@ class helper {
                 WHERE
                     r.shortname IN ('teacher', 'student', 'counsellor', 'principal')
                     and cu.companyid = :schoolid
+                    and CASE 
+                            WHEN :searchtext1 = ''
+                            THEN TRUE
+                            ELSE LOWER(CONCAT(u.firstname, ' ', u.lastname)) LIKE LOWER(:searchtext2)
+                        END
                 ";
-        return $DB->get_records_sql($sql, ['schoolid' => get_user_school()->companyid]);
+        return $DB->get_records_sql($sql, [
+            'schoolid' => get_user_school()->companyid,
+            'searchtext1' => $filters['name'],
+            'searchtext2' => "%".$filters['name']."%"
+        ]);
     }
 
     public function get_role_id_by_name($rolename) {
@@ -314,7 +323,7 @@ class helper {
         return $DB->insert_record('company_users', $record);
     }
 
-    public function get_school_admins() {
+    public function get_school_admins($filters) {
         global $DB;
         $sql = "SELECT
                     ra.userid,
@@ -331,9 +340,18 @@ class helper {
                     LEFT JOIN mdl_role r ON ra.roleid = r.id
                     LEFT JOIN {company} c ON cu.companyid = c.id
                 WHERE
-                    r.shortname IN ('schooladmin')
+                    r.shortname = 'schooladmin'
+                    and CASE 
+                            WHEN :searchtext1 = ''
+                            THEN TRUE
+                            ELSE LOWER(CONCAT(u.firstname, ' ', u.lastname)) LIKE LOWER(:searchtext2)
+                        END
                 ";
-        
-        return $DB->get_records_sql($sql);
+        $queryParams = [
+            'searchtext1' => $filters['name'],
+            'searchtext2' => "%".$filters['name']."%"
+        ];
+
+        return $DB->get_records_sql($sql, $queryParams);
     }
 }
