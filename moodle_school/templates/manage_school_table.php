@@ -2,7 +2,6 @@
 global $SESSION;
 $table = new html_table();
 $helper = new \theme_academi\helper();
-$schools = $helper->get_school_list();
 $table->head = [
     'Name',
     'ADDRESS',

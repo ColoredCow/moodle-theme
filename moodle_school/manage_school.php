@@ -5,11 +5,14 @@ require_login();
 if (!has_capability('local/moodle_survey:view-school', context_system::instance())) {
     redirect(new moodle_url('/'));
 }
-initialize_page();
+initialize_page($filters);
 echo $OUTPUT->header();
 $helper = new \theme_academi\helper();
-$schools = $helper->get_school_list();
-echo display_page($schools);
+$filters = [
+    "name" => optional_param('search', '', PARAM_TEXT)
+];
+$schools = $helper->get_school_list($filters);
+echo display_page($schools, $filters);
 echo $OUTPUT->footer();
 
 /**
@@ -24,11 +27,11 @@ function initialize_page() {
     $PAGE->set_title(get_string('school', 'theme_academi'));
 }
 
-function display_page($schools) {
+function display_page($schools, $filters) {
     include(__DIR__ . '/templates/manage_school_header.php');
     if ($schools) {
         include(__DIR__ . '/templates/manage_school_table.php');
     } else {
-        echo html_writer::tag('div', 'No MOOCs Found.', ['class' => 'alert alert-info']);
+        echo html_writer::tag('div', 'No Schools Found.', ['class' => 'alert alert-info']);
     }
 }

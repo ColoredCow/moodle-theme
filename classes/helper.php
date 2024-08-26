@@ -221,9 +221,19 @@ class helper {
         return $DB->get_records('course', ['category' => $categoryid]); 
     }
 
-    public function get_school_list() {
+    public function get_school_list($filters) {
         global $DB;
-        return $DB->get_records('company', []);
+        $sql = "SELECT * FROM {company} as c 
+            where CASE 
+                WHEN :searchtext1 = ''
+                THEN TRUE
+                ELSE LOWER(c.name) LIKE LOWER(:searchtext2)
+            END";
+        
+        return $DB->get_records_sql($sql, [
+            'searchtext1' => $filters['name'],
+            'searchtext2' => "%".$filters['name']."%"
+        ]);
     }
     
     public function get_school_admin(int $schoolid) {
