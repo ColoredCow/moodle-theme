@@ -25,10 +25,6 @@ function initialize_page() {
 }
 
 function display_page($schools) {
-    global $OUTPUT, $SESSION;
-
-    // Include the HTML for the survey management interface
-
     include(__DIR__ . '/templates/manage_school_header.php');
     if ($schools) {
         include(__DIR__ . '/templates/manage_school_table.php');

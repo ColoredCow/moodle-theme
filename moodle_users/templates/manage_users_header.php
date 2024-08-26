@@ -21,6 +21,9 @@
             $createurl = new moodle_url('/theme/academi/moodle_users/create/create_principal.php');
             $addbuttontext = 'Add New Principal';
             break;
+        case 'school_admin':
+            $hascapabilitytocreate = false;
+            break;
     }
     $iconurl = new \moodle_url('/theme/academi/pix/plus-icon.svg');
     if ($hascapabilitytocreate) {

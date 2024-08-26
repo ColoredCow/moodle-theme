@@ -5,6 +5,7 @@ global $PAGE, $CFG;
 $helper = new \theme_academi\helper();
 $schoolhelper = new \local_moodle_survey\model\school();
 require_login();
+echo $OUTPUT->header();
 if (!is_sel_admin()) {
     redirect(new moodle_url('/theme/academi/moodle_users/manage_users.php', ['tab' => 'student']));
 }
@@ -14,7 +15,6 @@ if (!$user) {
     redirect(new moodle_url('/theme/academi/moodle_users/manage_users.php', ['tab' => 'school_admin']));
 }
 initialize_page($PAGE);
-echo $OUTPUT->header();
 
 /**
  * Initializes the page context and resources.
