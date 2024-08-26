@@ -157,7 +157,8 @@ class course_renderer extends \core_course_renderer {
             'isprincipal' => $userrole == 'principal',
             'isadmin' => $userrole == 'sel_admin',
             'isteacher' => $userrole == 'teacher' ,
-            'isstudent' => $userrole == 'student'
+            'isstudent' => $userrole == 'student',
+            'isschooladmin' => $userrole == 'schooladmin'
         ];
 
         foreach ($frontpagelayout as $section) {
@@ -219,7 +220,8 @@ class course_renderer extends \core_course_renderer {
         if (in_array(true, [
             $rolescontextlist['isteacher'],
             $rolescontextlist['isadmin'],
-            $rolescontextlist['isstudent']
+            $rolescontextlist['isstudent'],
+            $rolescontextlist['isschooladmin']
         ])) {
             return;
         }
