@@ -7,6 +7,11 @@ require_login();
 if (is_sel_admin()) {
     redirect(new moodle_url('/theme/academi/moodle_users/manage_users.php', ['tab' => 'school_admin']));
 }
+$id = required_param('id', PARAM_INT);
+$user = $helper->get_user_by_id($id);
+if (!$user) {
+    redirect(new moodle_url('/theme/academi/moodle_users/manage_users.php', ['tab' => 'principal']));
+}
 initialize_page($PAGE);
 echo $OUTPUT->header();
 
@@ -24,45 +29,17 @@ function initialize_page($PAGE) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $systemcontext = context_system::instance();
-    $user = new stdClass();
-    $user->auth = 'manual';
-    $user->confirmed = 1;
-    $user->mnethostid = 1;
-    $user->username = $_POST['username'];
-    $user->idnumber = $_POST['employeeid'];
-    $user->password = hash_internal_user_password($_POST['password']);
+    $user->username = trim($_POST['username']);
+    $user->idnumber = trim($_POST['employeeid']);
+    if (trim($_POST['password']) != '') {
+        $user->password = hash_internal_user_password(trim($_POST['password']));
+    }
     $user->firstname = $_POST['firstname'];
     $user->lastname = $_POST['lastname'];
-    $user->email = $_POST['email'];
-    $user->timecreated = time();
+    $user->email = trim($_POST['email']);
     $user->timemodified = time();
-
-    $userid = $helper->create_user($user);
-    $role = $helper->get_role_id_by_name($_POST['usertype']);
-
-    $userrole = new stdClass();
-    $userrole->roleid = $role->id;
-    $userrole->userid = $userid;
-    $userrole->contextid = $systemcontext->id;
-    $userrole->timemodified = time();
-    $userrole->modifierid = $USER->id;
-
-    $usercompany = new stdClass();
-    $usercompany->userid = $userid;
-    $usercompany->companyid = get_user_school()->companyid;
-    $usercompany->managertype = 0;
-    $usercompany->departmentid = get_user_school_department()->id;
-    $usercompany->suspended = 0;
-    $usercompany->educator = 0;
-    $helper->assign_user_to_school($usercompany);
-
-    $result = $helper->assign_role($userrole);
-    $result = true;
-    if ($result) {
-        redirect(new moodle_url('/theme/academi/moodle_users/manage_users.php', ['tab' => 'teacher']));
-    } else {
-        echo '<div class="alert alert-danger">There was an error creating the user.</div>';
-    }
+    $userid = $helper->update_user($user);
+    redirect(new moodle_url('/theme/academi/moodle_users/manage_users.php', ['tab' => 'principal']));
 }
 ?>
 
@@ -71,13 +48,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 <form method="POST" class="needs-validation" novalidate>
     <input name="usertype" class="d-none" value="principal"> 
-    <?php require_once('../templates/create_user_form.php') ?>
+    <?php require_once('../templates/edit_user_form.php') ?>
     <div class="">
         <div class="col-auto pt-1">
             <label for="employeeid" class="col-form-label control-label"><?php echo 'Employee ID'; ?></label>
         </div>
         <div class="col-3">
-            <input type="text" class="form-control" name="employeeid" id="employeeid">
+            <input type="text" class="form-control" name="employeeid" value="<?php echo $user->idnumber; ?>" id="employeeid">
             <div class="invalid-feedback">
                 - Please provide a valid input.
             </div>
@@ -85,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <div class="pl-3 mt-4">
-        <button class="btn btn-primary" type="submit">Create</button>
+        <button class="btn btn-primary" type="submit">Edit</button>
     </div>
 </form>
 

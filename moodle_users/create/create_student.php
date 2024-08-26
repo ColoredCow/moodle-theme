@@ -4,7 +4,9 @@ require_once('../../../../config.php');
 global $PAGE, $CFG;
 $helper = new \theme_academi\helper();
 require_login();
-
+if (is_sel_admin()) {
+    redirect(new moodle_url('/theme/academi/moodle_users/manage_users.php', ['tab' => 'school_admin']));
+}
 initialize_page($PAGE);
 echo $OUTPUT->header();
 

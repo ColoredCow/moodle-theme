@@ -8,9 +8,8 @@ require_login();
 
 initialize_page($PAGE);
 echo $OUTPUT->header();
-
 if (!is_sel_admin()) {
-    redirect(new moodle_url('/theme/academi/moodle_school/manage_school.php'));
+    redirect(new moodle_url('/theme/academi/moodle_users/manage_users.php', ['tab' => 'student']));
 }
 
 $schoolid = $_GET['school'] ?? null;

@@ -294,6 +294,16 @@ class helper {
         return $DB->insert_record('user', $record);
     }
 
+    public static function update_user($record) {
+        global $DB;
+        return $DB->update_record('user', $record);
+    }
+    
+    public static function get_user_by_id($id) {
+        global $DB;
+        return $DB->get_record('user', ['id' => $id]);
+    }
+
     public function assign_role($record) {
         global $DB;
         return $DB->insert_record('role_assignments', $record);
@@ -302,5 +312,28 @@ class helper {
     public function assign_user_to_school($record) {
         global $DB;
         return $DB->insert_record('company_users', $record);
+    }
+
+    public function get_school_admins() {
+        global $DB;
+        $sql = "SELECT
+                    ra.userid,
+                    u.firstname,
+                    u.lastname,
+                    u.idnumber,
+                    cu.companyid,
+                    c.name as schoolname,
+                    c.shortname as schoolshortname
+                FROM
+                    {company_users} cu
+                    JOIN {role_assignments} ra ON cu.userid = ra.userid
+                    LEFT JOIN mdl_user u ON ra.userid = u.id
+                    LEFT JOIN mdl_role r ON ra.roleid = r.id
+                    LEFT JOIN {company} c ON cu.companyid = c.id
+                WHERE
+                    r.shortname IN ('schooladmin')
+                ";
+        
+        return $DB->get_records_sql($sql);
     }
 }

@@ -282,6 +282,7 @@ $string['users'] = 'Users';
 $string['student'] = 'Student';
 $string['counsellor'] = 'Counsellor';
 $string['teacher'] = 'Teacher';
+$string['schooladmin'] = 'School Admin';
 $string['principal'] = 'Principal';
 $string['studenttablehead'] = [
     'Name',
@@ -304,5 +305,10 @@ $string['counsellortablehead'] = [
 ];
 $string['principaltablehead'] = [
     'Name',
+    'Employee ID',
+];
+$string['schooladmintablehead'] = [
+    'Name',
+    'School Name',
     'Employee ID',
 ];

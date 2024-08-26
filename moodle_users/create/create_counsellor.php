@@ -8,6 +8,10 @@ require_login();
 initialize_page($PAGE);
 echo $OUTPUT->header();
 
+if (is_sel_admin()) {
+    redirect(new moodle_url('/theme/academi/moodle_users/manage_users.php', ['tab' => 'school_admin']));
+}
+
 /**
  * Initializes the page context and resources.
  */
@@ -73,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php require_once('../templates/create_user_form.php') ?>
     <div class="">
         <div class="col-auto pt-1">
-            <label for="employeeid" class="col-form-label control-label"><?php echo 'Student ID'; ?></label>
+            <label for="employeeid" class="col-form-label control-label"><?php echo 'Counsellor ID'; ?></label>
         </div>
         <div class="col-3">
             <input type="text" class="form-control" name="employeeid" id="employeeid" required>
