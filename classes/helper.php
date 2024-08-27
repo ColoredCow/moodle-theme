@@ -364,4 +364,18 @@ class helper {
 
         return $DB->get_records_sql($sql, $queryParams);
     }
+
+    public function create_user_grade($record) {
+        global $DB;
+        $record->created_at = date('Y-m-d H:i:s');
+        $record->updated_at = date('Y-m-d H:i:s');
+        return $DB->insert_record('cc_user_grade', $record);
+    }
+
+    public function update_user_grade($record) {
+        global $DB;
+        $record->created_at = date('Y-m-d H:i:s');
+        $record->updated_at = date('Y-m-d H:i:s');
+        return $DB->insert_record('cc_user_grade', $record);
+    }
 }

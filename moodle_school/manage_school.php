@@ -5,8 +5,8 @@ require_login();
 if (!has_capability('local/moodle_survey:view-school', context_system::instance())) {
     redirect(new moodle_url('/'));
 }
-initialize_page($filters);
 echo $OUTPUT->header();
+initialize_page($filters);
 $helper = new \theme_academi\helper();
 $filters = [
     "name" => optional_param('search', '', PARAM_TEXT)

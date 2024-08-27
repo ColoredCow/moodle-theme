@@ -57,6 +57,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $helper->assign_user_to_school($usercompany);
 
     $result = $helper->assign_role($userrole);
+
+    $usergrade = new stdClass();
+    $usergrade->user_grade = $_POST['studentgrade'];
+    $usergrade->user_id = $userid;
+    $helper->create_user_grade($usergrade);
+
     $result = true;
     if ($result) {
         redirect(new moodle_url('/theme/academi/moodle_users/manage_users.php', ['tab' => 'student']));
@@ -73,6 +79,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <form method="POST" class="col needs-validation" novalidate>
     <input name="usertype" class="d-none" value="student"> 
     <?php require_once('../templates/create_user_form.php') ?>
+    <div class="">
+        <div class="col-auto pt-1">
+            <label for="grade" class="col-form-label control-label">Student Grade</label>
+        </div>
+        <div class="col-7">
+            <select class="form-control" name="studentgrade" required>
+                <?php
+                    for ($grade = 1; $grade <= 12; $grade++) {
+                        echo '<option value="' . $grade . '">Grade ' . $grade . '</option>';
+                    }
+                ?>
+            </select>
+            <div class="invalid-feedback">
+                - Please provide a valid input.
+            </div>
+        </div>
+    </div>
     <div class="">
         <div class="col-auto pt-1">
             <label for="employeeid" class="col-form-label control-label"><?php echo 'Student ID'; ?></label>
