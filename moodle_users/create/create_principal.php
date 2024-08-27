@@ -14,7 +14,6 @@ if (is_sel_admin()) {
  * Initializes the page context and resources.
  */
 function initialize_page($PAGE) {
-
     $context = context_system::instance();
     $PAGE->set_context($context);
     $PAGE->set_url(new moodle_url('/theme/academi/moodle_users/manage_users.php'));

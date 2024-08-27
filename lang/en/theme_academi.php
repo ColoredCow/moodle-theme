@@ -312,3 +312,7 @@ $string['schooladmintablehead'] = [
     'School Name',
     'Employee ID',
 ];
+$string['uploadstudent'] = "Upload Students";
+$string['uploadteacher'] = "Upload Teachers";
+$string['uploadcounsellor'] = "Upload Counsellors";
+$string['uploadprincipal'] = "Upload Principals";

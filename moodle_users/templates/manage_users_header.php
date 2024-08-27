@@ -5,6 +5,7 @@
     $createurl = new moodle_url('/theme/academi/moodle_users/create/create_student.php');
     $addbuttontext = 'Add New Student';
     $hascapabilitytocreate = has_capability('local/moodle_survey:create-student', $context);
+    $importuserurl =  new moodle_url('/theme/academi/moodle_users/import_users.php', ['type' => $tab]);
     switch ($tab) {
         case 'teacher':
             $hascapabilitytocreate = has_capability('local/moodle_survey:create-teacher', $context);
@@ -35,9 +36,17 @@
             ),
             'create-button-container'
         );
+        $importbutton = html_writer::div(
+            html_writer::link(
+                $importuserurl,
+                ' Bulk Import',
+                array('class' => 'mr-2 create-button')
+            ),
+            'create-button-container'
+        );
     }
     $heading = html_writer::tag('span', get_string('users', 'theme_academi'), ['class' => 'page-title']);
-    $content = $heading . ' ' . $createbutton;
+    $content = $heading . ' <div class="d-flex">' . $importbutton . ' ' . $createbutton . '</div>';
     echo html_writer::tag('div', $content, ['class' => 'survey-header']);
     require_once(__DIR__ . '/tabs.php');
 
