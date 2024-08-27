@@ -1,0 +1,4 @@
+username,firstname,lastname,email,password,idnumber
+student1,Student,One,s1@example.com,student1_password,1232421
+student2,Student,Two,s2@example.com,student2_password,3242142
+student3,Student,Three,s3@example.com,student3_password,7261237
