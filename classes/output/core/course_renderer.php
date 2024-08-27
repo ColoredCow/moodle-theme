@@ -283,7 +283,8 @@ class course_renderer extends \core_course_renderer {
                 // Prepare data for the pie chart
                 $pieChartLabels = array_keys($interpretationCounts);
                 $pieChartData = array_map(function($count) use ($total) {
-                    return ($count / $total) * 100;  // Convert count to percentage
+                    $percentage = ($count / $total) * 100;
+                    return number_format($percentage, 1);
                 }, array_values($interpretationCounts));
                 $assignedColors = [];
 
