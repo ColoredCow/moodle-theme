@@ -376,6 +376,11 @@ class helper {
         global $DB;
         $record->created_at = date('Y-m-d H:i:s');
         $record->updated_at = date('Y-m-d H:i:s');
-        return $DB->insert_record('cc_user_grade', $record);
+        return $DB->update_record('cc_user_grade', $record);
+    }
+
+    public function get_user_grade_by_user_id($userid) {
+        global $DB;
+        return $DB->get_record('cc_user_grade', ['user_id' => $userid]);
     }
 }

@@ -57,6 +57,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $helper->assign_user_to_school($usercompany);
 
     $result = $helper->assign_role($userrole);
+
+    $usergrade = new stdClass();
+    $usergrade->user_grade = $_POST['teachergrade'];
+    $usergrade->user_id = $userid;
+    $helper->create_user_grade($usergrade);
+
     $result = true;
     if ($result) {
         redirect(new moodle_url('/theme/academi/moodle_users/manage_users.php', ['tab' => 'teacher']));
