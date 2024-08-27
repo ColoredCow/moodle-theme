@@ -74,6 +74,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php require_once('../templates/create_user_form.php') ?>
     <div class="">
         <div class="col-auto pt-1">
+            <label for="grade" class="col-form-label control-label">Teacher Grade</label>
+        </div>
+        <div class="col-7">
+            <select class="form-control" name="teachergrade" required>
+                <?php
+                    for ($grade = 1; $grade <= 12; $grade++) {
+                        echo '<option value="' . $grade . '">Grade ' . $grade . '</option>';
+                    }
+                ?>
+            </select>
+            <div class="invalid-feedback">
+                - Please provide a valid input.
+            </div>
+        </div>
+    </div>
+    <div class="">
+        <div class="col-auto pt-1">
             <label for="employeeid" class="col-form-label control-label"><?php echo 'Employee ID'; ?></label>
         </div>
         <div class="col-3">
