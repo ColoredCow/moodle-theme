@@ -25,7 +25,6 @@ function initialize_page() {
 
 function display_page($usertype) {
     global $PAGE;
-    $helper = new \theme_academi\helper();
     $context = context_system::instance();
     $url = new moodle_url('/theme/academi/moodle_users/import_users.php?type=student');
     switch ($usertype) {
@@ -37,18 +36,6 @@ function display_page($usertype) {
         case 'teacher':
             $url = new moodle_url('/theme/academi/moodle_users/import_users.php?type=teacher');
             if (is_sel_admin() && !has_capability('local/moodle_survey:create-teacher', $context)) {
-                redirect(new moodle_url('/'));
-            }
-            break;
-        case 'counsellor':
-            $url = new moodle_url('/theme/academi/moodle_users/import_users.php?type=counsellor');
-            if (is_sel_admin() && !has_capability('local/moodle_survey:create-counsellor', $context)) {
-                redirect(new moodle_url('/'));
-            }
-            break;
-        case 'principal':
-            $url = new moodle_url('/theme/academi/moodle_users/import_users.php?type=principal');
-            if (is_sel_admin() && !has_capability('local/moodle_survey:create-principal', $context)) {
                 redirect(new moodle_url('/'));
             }
             break;

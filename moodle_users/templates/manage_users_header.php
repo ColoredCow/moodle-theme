@@ -36,14 +36,17 @@
             ),
             'create-button-container'
         );
-        $importbutton = html_writer::div(
-            html_writer::link(
-                $importuserurl,
-                ' Bulk Import',
-                array('class' => 'mr-2 create-button')
-            ),
-            'create-button-container'
-        );
+        $importbutton = '';
+        if ($tab == 'student' || $tab == 'teacher') {
+            $importbutton = html_writer::div(
+                html_writer::link(
+                    $importuserurl,
+                    ' Bulk Import',
+                    array('class' => 'mr-2 create-button')
+                ),
+                'create-button-container'
+            );
+        }
     }
     $heading = html_writer::tag('span', get_string('users', 'theme_academi'), ['class' => 'page-title']);
     $content = $heading . ' <div class="d-flex">' . $importbutton . ' ' . $createbutton . '</div>';
