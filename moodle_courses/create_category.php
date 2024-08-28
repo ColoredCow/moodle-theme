@@ -41,14 +41,8 @@ function generate_page_header($category, $filters) {
         ),
         'create-button-container'
     );
-    if($category == get_string('survey', 'local_moodle_survey')) {
-        $addcategorytitle = get_string('addsurveycategory', 'local_moodle_survey');
-        $categoryheading = 'Surveys / '. get_string('surveycategorypagetitle', 'local_moodle_survey');
-    } else {
-        $addcategorytitle = get_string('addquestioncategory', 'local_moodle_survey');
-        $categoryheading = 'Surveys / '. get_string('questioncategorypagetitle', 'local_moodle_survey');
-    }
-    
+    $addcategorytitle = get_string('coursecategory', 'theme_academi');
+    $categoryheading = 'Courses / '. get_string('coursecategory', 'theme_academi');
     $heading = html_writer::tag('span', $categoryheading, ['class' => 'page-title']);
     $content = $heading . ' ' . $createbutton;
     $modallabel = $addcategorytitle;
