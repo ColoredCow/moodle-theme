@@ -386,6 +386,7 @@ class helper {
 
     public function get_all_course_categories() {
         global $DB;
-        return $DB->get_records('course_categories', ['parent' => self::get_top_level_category_by_name('Courses')->id]);
+        $categoryid = self::get_top_level_category_by_name('Courses')->id;
+        return $DB->get_records('course_categories', ['parent' => $categoryid]);
     }
 }

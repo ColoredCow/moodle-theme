@@ -5,13 +5,13 @@ require_once('components/modal.php');
 require_login();
 
 $context = context_system::instance();
-$category = required_param('category', PARAM_TEXT);
+$categoryid = required_param('category', PARAM_INT);
 $pagetype = "create_category";
 
 $PAGE->set_context($context);
 $PAGE->set_url(new moodle_url('/local/moodle_survey/create_category.php'));
 $PAGE->set_title(get_string('createcoursecategory', 'theme_academi'));
-$filters = get_filters($category);
+$filters = get_filters($categoryid);
 echo $OUTPUT->header();
 
 $helper = new \theme_academi\helper();
@@ -19,9 +19,9 @@ $categories = $helper->get_all_course_categories();
 if (strlen($filters['createcategory']) || $filters['categoryid']) {
     redirect(new moodle_url('/local/moodle_survey/create_category.php', ['category' => $category]));
 }
-echo generate_page_header($category, $filters);
+echo generate_page_header($categoryid, $filters);
 echo generate_filter_form($filters);
-echo generate_category_table($filters, $category, $categories);
+echo generate_category_table($filters, $categoryid, $categories);
 echo add_dynamic_form_script();
 echo $OUTPUT->footer();
 
@@ -87,7 +87,7 @@ function generate_filter_form($filters) {
  *
  * @return string HTML content for the survey table.
  */
-function generate_category_table($filters, $category, $categories) {
+function generate_category_table($filters, $categoryid, $categories) {
     global $PAGE;
     $table = new html_table();
     $deleteicon = new moodle_url('/local/moodle_survey/pix/delete-icon.svg');
@@ -100,10 +100,10 @@ function generate_category_table($filters, $category, $categories) {
         ];
         
         foreach ($categories as $category) {
-            $deleteurl = new moodle_url($PAGE->url, ['categoryid' => $category->id, 'category' => $category]);
+            $deleteurl = new moodle_url($PAGE->url, ['categoryid' => $category->id, 'category' => $categoryid]);
             $table->data[] = [
-                html_writer::link('#category-' . $category->id, $category->label),
-                date('Y-m-d', strtotime($category->created_at)),
+                html_writer::link('#category-' . $category->id, $category->name),
+                date('Y/m/d', $category->timemodified),
                 html_writer::link($deleteurl, 
                     html_writer::tag('img', '', ['src' => $deleteicon, 'alt' => 'Icon', 'class' => 'plus-icon'])
                 ),
