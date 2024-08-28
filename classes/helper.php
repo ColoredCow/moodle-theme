@@ -403,6 +403,19 @@ class helper {
         $record->updated_at = date('Y-m-d H:i:s');
         return $DB->insert_record('cc_user_grade', $record);
     }
+    
+    public function create_school_course_grade($record) {
+        global $DB;
+        $record->created_at = date('Y-m-d H:i:s');
+        $record->updated_at = date('Y-m-d H:i:s');
+        return $DB->insert_record('cc_school_course_grade', $record);
+    }
+    
+    public function update_school_course_grade($record) {
+        global $DB;
+        $record->updated_at = date('Y-m-d H:i:s');
+        return $DB->update_record('cc_school_course_grade', $record);
+    }
 
     public function update_user_grade($record) {
         global $DB;
@@ -426,6 +439,18 @@ class helper {
         global $DB;
         $records = $DB->get_records('company_course', ['courseid' => $courseid], '', 'companyid');
         return array_keys($records);
+    }
+    
+    public function get_assigned_school_students_for_course($courseid, $schoolid) {
+        global $DB;
+        return [];
+        $records = $DB->get_records('company_course', ['courseid' => $courseid], '', 'companyid');
+        return array_keys($records);
+    }
+    
+    public function get_assigned_school_grades_for_course($courseid, $schoolid) {
+        global $DB;
+        return $DB->get_record('cc_school_course_grade', ['course_id' => $courseid, "school_id" => $schoolid]);
     }
 
     public function get_user_grade_by_user_id($userid) {

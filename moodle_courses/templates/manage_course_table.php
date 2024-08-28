@@ -17,13 +17,25 @@ foreach ($courses as $course) {
     $editurl = new moodle_url('/course/edit.php', ['id' => $course->id]);
     $assignurl = new moodle_url('/theme/academi/moodle_courses/assign_school.php', ['course' => $course->id]);
     $coursename = html_writer::link($editurl, $course->fullname);
-    $assignbutton = html_writer::div(
-        html_writer::link(
-            $assignurl,
-            'Assign Schools',
-            array('class' => 'mr-2 assign-school-button')
-        )
-    );
+    $assignbutton = '';
+    if (has_capability('local/moodle_survey:assign-course-to-school', context_system::instance())) {
+        $assignbutton = html_writer::div(
+            html_writer::link(
+                $assignurl,
+                'Assign Schools',
+                array('class' => 'mr-2 assign-school-button')
+            )
+        );
+    } else if (has_capability('local/moodle_survey:assign-course-to-user', context_system::instance())) {
+        $assignurl = new moodle_url('/theme/academi/moodle_courses/assign_student.php', ['course' => $course->id]);
+        $assignbutton = html_writer::div(
+            html_writer::link(
+                $assignurl,
+                'Assign to Students',
+                array('class' => 'mr-2 assign-school-button')
+            )
+        );
+    }
     $table->data[] = [
         $coursename,
         format_string($helper->get_category_of_course($course)->name),

@@ -31,10 +31,9 @@
     echo html_writer::start_tag('form', ['method' => 'get', 'action' => $PAGE->url, 'id' => 'filter-form']);
     echo html_writer::start_div('filter-form d-flex justify-content-between');
     echo html_writer::select($moocsstatusoptions, 'status', $status, null, ['class' => 'status-select', 'id' => 'status-select']);
-    echo html_writer::empty_tag('input', ['type' => 'date', 'name' => 'createdon', 'placeholder' => get_string('createdat', 'local_moodle_survey'), 'class' => 'date-input']);
     echo html_writer::select($categoryoptions, 'category', $moocscategory, null, ['class' => 'status-select', 'id' => 'category-select']);
 
-    echo html_writer::empty_tag('input', ['type' => 'text', 'name' => 'search', 'value' => $search, 'placeholder' => get_string('search', 'local_moodle_survey'), 'class' => 'search-input']);
+    echo html_writer::empty_tag('input', ['type' => 'text', 'name' => 'search', 'value' => $search, 'placeholder' => get_string('search', 'local_moodle_survey'), 'class' => 'search-input', 'id' => 'search-input']);
 
     echo html_writer::end_div();
     echo html_writer::end_tag('form');
@@ -44,7 +43,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             var statusSelect = document.getElementById('status-select');
             var categorySelect = document.getElementById('category-select');
-            var dateInput = document.querySelector('.date-input');
+            var searchElement = document.getElementById('search-input');
             var form = document.getElementById('filter-form');
 
             function submitForm() {
@@ -59,8 +58,8 @@
                 categorySelect.addEventListener('change', submitForm);
             }
 
-            if (dateInput) {
-                dateInput.addEventListener('change', submitForm);
+            if (searchElement) {
+                searchElement.addEventListener('change', submitForm);
             }
         });
     ");
