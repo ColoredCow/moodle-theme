@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result = $helper->assign_role($userrole);
 
     $usergrade = new stdClass();
-    $usergrade->user_grade = $_POST['teachergrade'];
+    $usergrade->user_grade = json_encode($_POST['teachergrade']);
     $usergrade->user_id = $userid;
     $helper->create_user_grade($usergrade);
 
@@ -83,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <label for="grade" class="col-form-label control-label">Teacher Grade</label>
         </div>
         <div class="col-7">
-            <select class="form-control" name="teachergrade" required>
+            <select class="form-control grade-multiselect" name="teachergrade[]" required multiple>
                 <?php
                     for ($grade = 1; $grade <= 12; $grade++) {
                         echo '<option value="' . $grade . '">Grade ' . $grade . '</option>';
