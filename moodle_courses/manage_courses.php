@@ -1,6 +1,7 @@
 <?php
 
 require_once('../../../config.php');
+require_once('components/modal.php');
 require_login();
 
 initialize_page();

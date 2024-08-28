@@ -1887,3 +1887,15 @@ select {
     height: 118px !important;
     max-width: 250px !important;
 }
+
+.modal-content {
+    max-height: 590px !important;
+}
+
+.modal-description {
+    overflow-y: scroll;
+}
+
+.categories-link {
+    margin-bottom: 40pxw;
+}

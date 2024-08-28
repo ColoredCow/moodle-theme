@@ -396,6 +396,11 @@ class helper {
         return $DB->insert_record('course_categories', $record);
     }
 
+    public function get_categories_by_parent_id($categoryid) {
+        global $DB;
+        return $DB->get_records('course_categories', ['parent' => $categoryid]);
+    }
+
     public function get_all_course_categories($filters) {
         global $DB;
         $categoryid = self::get_top_level_category_by_name('Courses')->id;
@@ -408,6 +413,6 @@ class helper {
                 $DB->delete_records('course_categories', ['id' => $filters['coursecategoryid']]);
                 break;
         }
-        return $DB->get_records('course_categories', ['parent' => $categoryid]);
+        return self::get_categories_by_parent_id($categoryid);
     }
 }

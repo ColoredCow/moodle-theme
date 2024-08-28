@@ -16,7 +16,7 @@ function generate_modal($modallabel = '', $modaldescription, $modallink = '') {
                     'modal-header'
                 ) .
             html_writer::end_div() .
-            html_writer::div($modaldescription),
+            $modaldescription,
             'modal-content'
         ),
         'modal'

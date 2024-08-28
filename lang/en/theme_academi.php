@@ -318,3 +318,5 @@ $string['uploadcounsellor'] = "Upload Counsellors";
 $string['uploadprincipal'] = "Upload Principals";
 $string['createcoursecategory'] = "Create Course Category";
 $string['coursecategory'] = "Course Category";
+$string['choosecoursecategories'] = 'Choose Course Categories';
+$string['createcoursecategorycontent'] = 'For create the course, need to create the categories first.';
