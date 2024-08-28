@@ -75,8 +75,7 @@ function generate_filter_form($filters, $coursecategoryurl, $categoryid) {
 
     return html_writer::start_tag('form', ['method' => 'get', 'action' => $coursecategoryurl, 'id' => 'filter-form']) .
             html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'categoryid', 'value'=> $categoryid]) .
-            html_writer::start_div('filter-form d-flex justify-content-around') .
-            html_writer::empty_tag('input', ['type' => 'date', 'name' => 'createdon', 'placeholder' => get_string('createdat', 'local_moodle_survey'), 'class' => 'date-input category-filter']) .
+            html_writer::start_div('filter-form d-flex') .
             html_writer::empty_tag('input', ['type' => 'text', 'name' => 'search', 'value' => $filters['search'], 'placeholder' => get_string('search', 'local_moodle_survey'), 'class' => 'search-input category-filter']) .
             html_writer::end_div() .
             html_writer::end_tag('form');
