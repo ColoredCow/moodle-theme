@@ -481,10 +481,14 @@ class helper {
 
         switch ($filters['categorytype']) {
             case 'create':
-                self::create_course_categories($categoryid, $filters['categoryname']);
+                if (!empty($filters['categoryname'])) {
+                    self::create_course_categories($categoryid, $filters['categoryname']);
+                }
                 break;
             case 'delete':
-                $DB->delete_records('course_categories', ['id' => $filters['coursecategoryid']]);
+                if (!empty($filters['coursecategoryid'])) {
+                    $DB->delete_records('course_categories', ['id' => $filters['coursecategoryid']]);
+                }
                 break;
         }
         return self::get_categories_by_parent_id($categoryid);

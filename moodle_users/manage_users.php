@@ -49,13 +49,13 @@ function display_page($users, $filters) {
             if (is_sel_admin() && !has_capability('local/moodle_survey:view-student', $context)) {
                 redirect(new moodle_url('/'));
             }
-            get_students_data($tab, $users);
+            get_students_data($tab, $users, $helper);
             break;
         case 'teacher':
             if (is_sel_admin() &&!has_capability('local/moodle_survey:view-teacher', $context)) {
                 redirect(new moodle_url($PAGE->url, ['tab' => 'student']));
             }
-            get_teachers_data($tab, $users);
+            get_teachers_data($tab, $users, $helper);
             break;
         case 'counsellor':
             if (is_sel_admin() &&!has_capability('local/moodle_survey:view-counsellor', $context)) {
@@ -78,7 +78,7 @@ function display_page($users, $filters) {
     }
 }
 
-function get_students_data($tab, $users) {
+function get_students_data($tab, $users, $helper) {
     $context = context_system::instance();
     $students = [];
     $tabledata = [];
@@ -90,6 +90,8 @@ function get_students_data($tab, $users) {
         }
         foreach($students as $student) {
             $name = $student->firstname . ' ' . $student->lastname;
+            $studentgrade = $helper->get_user_grade_by_user_id($student->userid);
+            $grade = $studentgrade ? implode(", ", json_decode($studentgrade->user_grade, true)) : '-';
             if (has_capability('local/moodle_survey:create-student', $context)) {
                 $editurl = new moodle_url('/theme/academi/moodle_users/edit/edit_student.php', ['id' => $student->id]);
                 $name = html_writer::link($editurl, $name);
@@ -97,7 +99,7 @@ function get_students_data($tab, $users) {
             $tabledata[] = [
                 $name,
                 $student->idnumber,
-                '-',
+                $grade,
                 '-',
                 '-'
             ];
@@ -111,7 +113,7 @@ function get_students_data($tab, $users) {
     echo html_writer::end_div();
 }
 
-function get_teachers_data($tab, $users) {
+function get_teachers_data($tab, $users, $helper) {
     $context = context_system::instance();
     $teachers = [];
     $tabledata = [];
@@ -123,6 +125,8 @@ function get_teachers_data($tab, $users) {
         }
         foreach($teachers as $teacher) {
             $name = $teacher->firstname . ' ' . $teacher->lastname;
+            $teachergrade = $helper->get_user_grade_by_user_id($teacher->userid);
+            $grade = $teachergrade ? implode(", ", json_decode($teachergrade->user_grade, true)) : '-';
             if (has_capability('local/moodle_survey:create-teacher', $context)) {
                 $editurl = new moodle_url('/theme/academi/moodle_users/edit/edit_teacher.php', ['id' => $teacher->id]);
                 $name = html_writer::link($editurl, $name);
@@ -130,7 +134,7 @@ function get_teachers_data($tab, $users) {
             $tabledata[] = [
                 $name,
                 $teacher->idnumber,
-                '-',
+                $grade,
                 '-',
                 '-'
             ];
