@@ -2,16 +2,21 @@
 <?php
 $table = new html_table();
 $helper = new \theme_academi\helper();
-
-$table->head = [
+$headers =  [
     'Name',
     'Category',
-    'Created ON',
-    'Schools',
-    'Teachers assigned',
+    'Created On'
+];
+if (has_capability('local/moodle_survey:assign-course-to-school', context_system::instance())) {
+    $headers[] = 'Schools';
+}
+$headers = array_merge($headers, [
+    'Students assigned',
     'Status',
     'Action'
-];
+]);
+
+$table->head = $headers;
 
 foreach ($courses as $course) {
     $editurl = new moodle_url('/course/edit.php', ['id' => $course->id]);
@@ -36,15 +41,21 @@ foreach ($courses as $course) {
             )
         );
     }
-    $table->data[] = [
+    $tabledata = [
         $coursename,
         format_string($helper->get_category_of_course($course)->name),
-        format_string(date('Y-m-d', $course->timecreated)),
-        format_string($helper->get_schools_count_for_course($course)),
+        format_string(date('Y-m-d', $course->timecreated))
+    ];
+    if (has_capability('local/moodle_survey:assign-course-to-school', context_system::instance())) {
+        $tabledata[] = format_string($helper->get_schools_count_for_course($course));
+    }
+
+    $tabledata = array_merge($tabledata, [
         format_string($helper->get_assignees_count_for_course($course)),
         html_writer::span('Live', "badge badge-pill badge-color survey-status survey-live"),
         $assignbutton
-    ];
+    ]);
+    $table->data[] = $tabledata;
 }
 
 echo html_writer::table($table);
