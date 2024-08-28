@@ -384,9 +384,30 @@ class helper {
         return $DB->get_record('cc_user_grade', ['user_id' => $userid]);
     }
 
-    public function get_all_course_categories() {
+    public function create_course_categories($categoryid, $categoryname) {
+        global $DB;
+        $record = new \stdClass();
+        $record->name = $categoryname;
+        $record->description = 'Courses';
+        $record->parent = $categoryid;
+        $record->visible = 1;
+        $record->timemodified = time();
+        $record->timecreated = time();
+        return $DB->insert_record('course_categories', $record);
+    }
+
+    public function get_all_course_categories($filters) {
         global $DB;
         $categoryid = self::get_top_level_category_by_name('Courses')->id;
+
+        switch ($filters['categorytype']) {
+            case 'create':
+                self::create_course_categories($categoryid, $filters['categoryname']);
+                break;
+            case 'delete':
+                $DB->delete_records('course_categories', ['id' => $filters['coursecategoryid']]);
+                break;
+        }
         return $DB->get_records('course_categories', ['parent' => $categoryid]);
     }
 }

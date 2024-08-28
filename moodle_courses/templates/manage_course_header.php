@@ -4,7 +4,7 @@
     $helper = new \theme_academi\helper();
     $createurl = new \moodle_url('/course/edit.php', ['category'=>$coursescategory->id]);
     $coursecategory = $helper->get_top_level_category_by_name('Courses');
-    $createcoursecategoryurl = new moodle_url('/theme/academi/moodle_courses/create_category.php', ['category' => $coursecategory->id]);
+    $createcoursecategoryurl = new moodle_url('/theme/academi/moodle_courses/create_category.php', ['categoryid' => $coursecategory->id]);
     $createmoocscategoryurl = '#';
     $iconurl = new \moodle_url('/local/moodle_survey/pix/plus-icon.svg');
     $createbutton = html_writer::div(
