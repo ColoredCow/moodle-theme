@@ -28,7 +28,7 @@
     echo choose_categories_modal($createcoursecategoryurl, $iconurl);
 
     echo generate_form_submission_script();
-
+    
     function generate_form_submission_script() {
         return html_writer::script("
             document.addEventListener('DOMContentLoaded', function() {

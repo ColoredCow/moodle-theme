@@ -215,6 +215,11 @@ class helper {
         return $DB->get_record('course_categories', ['name' => $name, 'parent' => 0]);       
     }
 
+    public function get_course_by_id($id) {
+        global $DB;
+        return $DB->get_record('course', ['id' => $id]); 
+    }
+
     public function get_courses_list_by_category_id($categoryid) {
         global $DB;
        
@@ -322,6 +327,11 @@ class helper {
         global $DB;
         return $DB->get_record('user', ['id' => $id]);
     }
+    
+    public static function get_all_schools() {
+        global $DB;
+        return $DB->get_records('company');
+    }
 
     public function assign_role($record) {
         global $DB;
@@ -331,6 +341,28 @@ class helper {
     public function assign_user_to_school($record) {
         global $DB;
         return $DB->insert_record('company_users', $record);
+    }
+    
+    public function assign_course_to_school($record) {
+        global $DB;
+        return $DB->insert_record('company_course', $record);
+    }
+    
+    public function get_mapping_for_school_course($schoolid, $courseid) {
+        global $DB;
+        return $DB->get_record('company_course', ['companyid' => $schoolid, 'courseid' => $courseid]);
+    }
+    
+    public function unassign_course_from_school($schoolids, $courseid) {
+        global $DB;
+
+        if (empty($schoolids)) {
+            return;
+        }
+        list($insql, $params) = $DB->get_in_or_equal($schoolids, SQL_PARAMS_NAMED, 'sch');
+        $params['courseid'] = $courseid;
+    
+        $DB->delete_records_select('company_course', "courseid = :courseid AND companyid $insql", $params);
     }
 
     public function get_school_admins($filters) {
@@ -371,12 +403,54 @@ class helper {
         $record->updated_at = date('Y-m-d H:i:s');
         return $DB->insert_record('cc_user_grade', $record);
     }
+    
+    public function create_school_course_grade($record) {
+        global $DB;
+        $record->created_at = date('Y-m-d H:i:s');
+        $record->updated_at = date('Y-m-d H:i:s');
+        return $DB->insert_record('cc_school_course_grade', $record);
+    }
+    
+    public function update_school_course_grade($record) {
+        global $DB;
+        $record->updated_at = date('Y-m-d H:i:s');
+        return $DB->update_record('cc_school_course_grade', $record);
+    }
 
     public function update_user_grade($record) {
         global $DB;
         $record->created_at = date('Y-m-d H:i:s');
         $record->updated_at = date('Y-m-d H:i:s');
         return $DB->update_record('cc_user_grade', $record);
+    }
+
+    public function get_school_by_id($id) {
+        global $DB;
+        return $DB->get_record('company', ['id' => $id]);
+    }
+
+    public function get_department_for_school($schoolid) {
+        global $DB;
+        $schoolshortname = $this->get_school_by_id($schoolid)->shortname;    
+        return $DB->get_record('department', ['shortname' => $schoolshortname]);
+    }
+
+    public function get_assigned_schools_for_course($courseid) {
+        global $DB;
+        $records = $DB->get_records('company_course', ['courseid' => $courseid], '', 'companyid');
+        return array_keys($records);
+    }
+    
+    public function get_assigned_school_students_for_course($courseid, $schoolid) {
+        global $DB;
+        return [];
+        $records = $DB->get_records('company_course', ['courseid' => $courseid], '', 'companyid');
+        return array_keys($records);
+    }
+    
+    public function get_assigned_school_grades_for_course($courseid, $schoolid) {
+        global $DB;
+        return $DB->get_record('cc_school_course_grade', ['course_id' => $courseid, "school_id" => $schoolid]);
     }
 
     public function get_user_grade_by_user_id($userid) {
