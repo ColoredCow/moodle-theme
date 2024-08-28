@@ -19,7 +19,7 @@ if (strlen($filters['categorytype']) > 0) {
     redirect($coursecategoryurl);
 }
 echo generate_page_header($categoryid, $coursecategoryurl);
-echo generate_filter_form($filters, $coursecategoryurl);
+echo generate_filter_form($filters, $coursecategoryurl, $categoryid);
 echo generate_category_table($categoryid, $categories);
 echo add_dynamic_form_script();
 echo $OUTPUT->footer();
@@ -49,7 +49,7 @@ function generate_page_header($categoryid, $coursecategoryurl) {
     $heading = html_writer::tag('span', $categoryheading, ['class' => 'page-title']);
     $content = $heading . ' ' . $createbutton;
     $modallabel = $addcategorytitle;
-    $modaldescription = html_writer::start_tag('form', ['method' => 'get', 'action' => $coursecategoryurl, 'id' => 'filter-form']) .
+    $modaldescription = html_writer::start_tag('form', ['method' => 'get', 'action' => $coursecategoryurl]) .
     html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'categoryid', 'value'=> $categoryid]) .
     html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'categorytype', 'value'=> 'create']) .
     html_writer::div(
@@ -65,15 +65,16 @@ function generate_page_header($categoryid, $coursecategoryurl) {
             'class' => 'custom-action-btn add-category-btn'
         ])
         , 'add-category-form'
-    );
+    ) . html_writer::end_tag('form');
     $modal = generate_modal($modallabel, $modaldescription);
     return html_writer::tag('div', $content . $modal, ['class' => 'survey-header']);
 }
 
-function generate_filter_form($filters, $coursecategoryurl) {
+function generate_filter_form($filters, $coursecategoryurl, $categoryid) {
     global $PAGE;
 
     return html_writer::start_tag('form', ['method' => 'get', 'action' => $coursecategoryurl, 'id' => 'filter-form']) .
+            html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'categoryid', 'value'=> $categoryid]) .
             html_writer::start_div('filter-form d-flex justify-content-around') .
             html_writer::empty_tag('input', ['type' => 'date', 'name' => 'createdon', 'placeholder' => get_string('createdat', 'local_moodle_survey'), 'class' => 'date-input category-filter']) .
             html_writer::empty_tag('input', ['type' => 'text', 'name' => 'search', 'value' => $filters['search'], 'placeholder' => get_string('search', 'local_moodle_survey'), 'class' => 'search-input category-filter']) .
@@ -116,12 +117,14 @@ function get_filters() {
     $categoryid = optional_param('categoryid', '', PARAM_INT);
     $categorytype = optional_param('categorytype', '', PARAM_RAW_TRIMMED);
     $coursecategoryid = optional_param('coursecategoryid', '', PARAM_INT);
+    $search = optional_param('search', '', PARAM_RAW_TRIMMED);
 
     return [
         'categoryname' => $categoryname,
         'categoryid' => $categoryid,
         'categorytype' => $categorytype,
-        'coursecategoryid' => $coursecategoryid
+        'coursecategoryid' => $coursecategoryid,
+        'search' => $search,
     ];
 }
 

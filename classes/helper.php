@@ -477,20 +477,32 @@ class helper {
 
     public function get_all_course_categories($filters) {
         global $DB;
+    
         $categoryid = self::get_top_level_category_by_name('Courses')->id;
-
-        switch ($filters['categorytype']) {
-            case 'create':
-                if (!empty($filters['categoryname'])) {
-                    self::create_course_categories($categoryid, $filters['categoryname']);
-                }
-                break;
-            case 'delete':
-                if (!empty($filters['coursecategoryid'])) {
-                    $DB->delete_records('course_categories', ['id' => $filters['coursecategoryid']]);
-                }
-                break;
+        $params = ['categoryid' => $categoryid];
+        $sql = 'SELECT * FROM {course_categories} WHERE parent = :categoryid';
+    
+        if (isset($filters['categorytype'])) {
+            switch ($filters['categorytype']) {
+                case 'create':
+                    if (!empty($filters['categoryname'])) {
+                        self::create_course_categories($categoryid, $filters['categoryname']);
+                    }
+                    break;
+    
+                case 'delete':
+                    if (!empty($filters['coursecategoryid'])) {
+                        $DB->delete_records('course_categories', ['id' => $filters['coursecategoryid']]);
+                    }
+                    break;
+            }
         }
-        return self::get_categories_by_parent_id($categoryid);
+    
+        if (!empty($filters['search'])) {
+            $sql .= " AND name LIKE :search";
+            $params['search'] = '%' . $filters['search'] . '%';
+        }
+    
+        return $DB->get_records_sql($sql, $params);
     }
 }
