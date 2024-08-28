@@ -25,7 +25,6 @@ function initialize_page() {
 
 function display_page($usertype) {
     global $PAGE;
-    $helper = new \theme_academi\helper();
     $context = context_system::instance();
     $url = new moodle_url('/theme/academi/moodle_users/import_users.php?type=student');
     switch ($usertype) {
@@ -37,18 +36,6 @@ function display_page($usertype) {
         case 'teacher':
             $url = new moodle_url('/theme/academi/moodle_users/import_users.php?type=teacher');
             if (is_sel_admin() && !has_capability('local/moodle_survey:create-teacher', $context)) {
-                redirect(new moodle_url('/'));
-            }
-            break;
-        case 'counsellor':
-            $url = new moodle_url('/theme/academi/moodle_users/import_users.php?type=counsellor');
-            if (is_sel_admin() && !has_capability('local/moodle_survey:create-counsellor', $context)) {
-                redirect(new moodle_url('/'));
-            }
-            break;
-        case 'principal':
-            $url = new moodle_url('/theme/academi/moodle_users/import_users.php?type=principal');
-            if (is_sel_admin() && !has_capability('local/moodle_survey:create-principal', $context)) {
                 redirect(new moodle_url('/'));
             }
             break;
@@ -91,7 +78,7 @@ function import_users($mform, $usertype) {
 }
 
 function validate_columns($columns) {
-    $validcolumns = ['username', 'firstname', 'lastname', 'email', 'password', 'idnumber'];
+    $validcolumns = ['username', 'firstname', 'lastname', 'email', 'password', 'idnumber', 'grade'];
     $difference = array_diff($validcolumns, $columns);
 
     return empty($difference);
@@ -107,12 +94,18 @@ function create_new_user($columns, $row, $usertype) {
     $user->mnethostid = 1;
     $user->timecreated = time();
     $user->timemodified = time();
+    $grade = null; 
     foreach ($columns as $index => $column) {
         $value = $row[$index];
         switch($column) {
             case 'password': 
                 $user->password = hash_internal_user_password($value);
                 break;
+            case 'grade': 
+                $grade = explode(',', $value);
+                if ($usertype == "student") {
+                    $grade = [$grade[0]];
+                }
             default:
                 $user->$column = $value;      
         } 
@@ -136,6 +129,11 @@ function create_new_user($columns, $row, $usertype) {
     $usercompany->suspended = 0;
     $usercompany->educator = 0;
     $helper->assign_user_to_school($usercompany);
+
+    $usergrade = new stdClass();
+    $usergrade->user_grade = json_encode($grade);
+    $usergrade->user_id = $userid;
+    $helper->create_user_grade($usergrade);
 
     $result = $helper->assign_role($userrole);
 }

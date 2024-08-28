@@ -21,9 +21,10 @@ class import_users_form extends \moodleform {
         $mform = $this->_form;
         $usertype = $this->_customdata['usertype'];
         $headingtext = get_string('uploadstudent', 'theme_academi');
-
+        $url = new moodle_url('example_csv/example.csv');
         switch ($usertype) {
             case 'teacher':
+                $url = new moodle_url('example_csv/teacher_example.csv');
                 $headingtext = get_string('uploadteacher', 'theme_academi');
                 break;
             case 'counsellor':
@@ -36,7 +37,7 @@ class import_users_form extends \moodleform {
 
         $mform->addElement('header', 'settingsheader', $headingtext);
 
-        $url = new moodle_url('example.csv');
+        
         $link = html_writer::link($url, 'example.csv');
         $mform->addElement('static', 'examplecsv', get_string('examplecsv', 'tool_uploaduser'), $link);
         $mform->addHelpButton('examplecsv', 'examplecsv', 'tool_uploaduser');
