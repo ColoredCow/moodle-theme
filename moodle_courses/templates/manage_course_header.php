@@ -1,13 +1,15 @@
 <?php
     $categories = [];
     $moocsstatusoptions = [];
+    $helper = new \theme_academi\helper();
     $createurl = new \moodle_url('/course/edit.php', ['category'=>$coursescategory->id]);
-    $createsurveycategoryurl = '#';
+    $coursecategory = $helper->get_top_level_category_by_name('Courses');
+    $createcoursecategoryurl = new moodle_url('/theme/academi/moodle_courses/create_category.php', ['category' => $coursecategory->id]);
     $createmoocscategoryurl = '#';
     $iconurl = new \moodle_url('/local/moodle_survey/pix/plus-icon.svg');
     $createbutton = html_writer::div(
         html_writer::link(
-            $createmoocscategoryurl,
+            $createcoursecategoryurl,
             'Course categories',
             array('class' => 'create-button')
         ) .

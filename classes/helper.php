@@ -383,4 +383,9 @@ class helper {
         global $DB;
         return $DB->get_record('cc_user_grade', ['user_id' => $userid]);
     }
+
+    public function get_all_course_categories() {
+        global $DB;
+        return $DB->get_records('course_categories', ['parent' => self::get_top_level_category_by_name('Courses')->id]);
+    }
 }

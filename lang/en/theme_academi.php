@@ -316,3 +316,4 @@ $string['uploadstudent'] = "Upload Students";
 $string['uploadteacher'] = "Upload Teachers";
 $string['uploadcounsellor'] = "Upload Counsellors";
 $string['uploadprincipal'] = "Upload Principals";
+$string['createcoursecategory'] = "Create Course Category";
