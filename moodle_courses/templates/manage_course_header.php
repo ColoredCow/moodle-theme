@@ -78,17 +78,39 @@
         $categoryid = $helper->get_top_level_category_by_name('Courses')->id;
         $categories = $helper->get_categories_by_parent_id($categoryid);
         $modallabel = get_string('choosecoursecategories', 'theme_academi');
-        if (sizeof($categories) > 0) {
+        if (!empty($categories)) {
+            $form = html_writer::start_tag('form', [
+                'method' => 'get',
+                'action' => new moodle_url('/course/edit.php'),
+                'class'  => 'category-selection-form',
+            ]);
+        
+            $select = html_writer::start_tag('div', ['class' => 'form-group']);
+            $select .= html_writer::tag('label', 'Select Category:', ['for' => 'category-select']);
+            $select .= html_writer::start_tag('select', [
+                'name'     => 'category',
+                'id'       => 'category-select',
+                'class'    => 'form-control',
+                'required' => true,
+            ]);
+        
             foreach ($categories as $category) {
-                $categoryurl = new \moodle_url('/course/edit.php', ['category'=> $category->id]);
-                $modaldescription .= html_writer::link(
-                    $categoryurl,
-                    $category->name,
-                    array('class' => 'create-button d-flex justify-content-center categories-link')
-                );
+                $select .= html_writer::tag('option', format_string($category->name), ['value' => $category->id]);
             }
         
-            $modaldescription = html_writer::div($modaldescription, 'modal-description');
+            $select .= html_writer::end_tag('select');
+            $select .= html_writer::end_tag('div');
+        
+            $button = html_writer::tag('button', 'Next', [
+                'type'  => 'submit',
+                'class' => 'btn btn-primary',
+            ]);
+        
+            $form .= $select . $button;
+        
+            $form .= html_writer::end_tag('form');
+        
+            $modaldescription = html_writer::div($form, 'modal-description');
         } else {
             $modaldescription = html_writer::tag('div', get_string('createcoursecategorycontent', 'theme_academi'), ['class' => 'alert alert-info']);
             $modaldescription .= html_writer::div(
