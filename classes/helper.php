@@ -315,7 +315,7 @@ class helper {
             $params['schoolid'] = get_user_school()->companyid;
             $sql = "SELECT count(ue.id) as total FROM {enrol} as enrol
                 JOIN {user_enrolments} as ue ON ue.enrolid = enrol.id
-                JOIN {company_user} as cu ON cu.userid = ue.userid
+                JOIN {company_users} as cu ON cu.userid = ue.userid
                 WHERE enrol.courseid = :courseid
                 AND cu.companyid = :schoolid
             ";
