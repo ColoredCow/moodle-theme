@@ -24,6 +24,8 @@
  */
 namespace theme_academi;
 
+use core_course_category;
+
 /**
  * Helper class for additional function on the acadmei theme.
  */
@@ -460,14 +462,14 @@ class helper {
 
     public function create_course_categories($categoryid, $categoryname) {
         global $DB;
-        $record = new \stdClass();
-        $record->name = $categoryname;
-        $record->description = 'Courses';
-        $record->parent = $categoryid;
-        $record->visible = 1;
-        $record->timemodified = time();
-        $record->timecreated = time();
-        return $DB->insert_record('course_categories', $record);
+        $data = new \stdClass();
+        $data->name = $categoryname;
+        $data->description = '';
+        $data->parent = $categoryid;
+        $data->visible = 1;
+        $data->timemodified = time();
+        $data->timecreated = time();
+        core_course_category::create($data);
     }
 
     public function get_categories_by_parent_id($categoryid) {
