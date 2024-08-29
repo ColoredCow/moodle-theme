@@ -41,6 +41,16 @@ foreach ($courses as $course) {
             )
         );
     }
+    else if(is_student()) {
+        $coursename = html_writer::span($course->fullname);
+        $assignbutton = html_writer::div(
+            html_writer::link(
+                new moodle_url('/course/view.php', ['id' => $course->id]),
+                'Take Course',
+                array('class' => 'mr-2 assign-school-button')
+            )
+        );
+    }
     $tabledata = [
         $coursename,
         format_string($helper->get_category_of_course($course)->name),

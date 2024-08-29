@@ -224,20 +224,40 @@ class helper {
 
     public function get_courses_list_by_category_id($categoryid) {
         global $DB;
-       
+
         return $DB->get_records('course', ['category' => $categoryid]); 
+    }
+
+    public function get_courses_list_by_user() {
+        global $DB, $USER;
+        $sql = "SELECT
+                    c.*
+                FROM
+                    {user_enrolments} ue
+                    LEFT JOIN {enrol} e ON e.id = ue.enrolid
+                    LEFT JOIN {course} c ON c.id = e.courseid
+                    WHERE ue.userid = :userid";
+
+        $params['userid'] = $USER->id;
+
+        return $DB->get_records_sql($sql, $params);
     }
     
     public function get_courses_list_by_top_level_category($categoryname) {
         global $DB;
         $toplevelcategory = $this->get_top_level_category_by_name($categoryname);
+
+        if(is_student()){
+            return self::get_courses_list_by_user();
+        }
+
         $sql = "SELECT c.* FROM {course} as c 
             JOIN {course_categories} as cc
             ON c.category = cc.id
             WHERE parent = :parentid
         ";
-       
-         return $DB->get_records_sql($sql, ['parentid' => $toplevelcategory->id]);
+
+        return $DB->get_records_sql($sql, ['parentid' => $toplevelcategory->id]);
     }
 
     public function get_school_list($filters) {
@@ -266,8 +286,8 @@ class helper {
                 FROM
                     {company_users} cu
                     JOIN {role_assignments} ra ON cu.userid = ra.userid
-                    LEFT JOIN mdl_user u ON ra.userid = u.id
-                    LEFT JOIN mdl_role r ON ra.roleid = r.id
+                    LEFT JOIN {user} u ON ra.userid = u.id
+                    LEFT JOIN {role} r ON ra.roleid = r.id
                 WHERE
                     r.shortname = 'schooladmin'
                     and cu.companyid = :schoolid";
@@ -304,8 +324,8 @@ class helper {
                 FROM
                     {company_users} cu
                     JOIN {role_assignments} ra ON cu.userid = ra.userid
-                    LEFT JOIN mdl_user u ON ra.userid = u.id
-                    LEFT JOIN mdl_role r ON ra.roleid = r.id
+                    LEFT JOIN {user} u ON ra.userid = u.id
+                    LEFT JOIN {role} r ON ra.roleid = r.id
                 WHERE
                     r.shortname IN ('teacher', 'student', 'counsellor', 'principal')
                     and cu.companyid = :schoolid
@@ -392,8 +412,8 @@ class helper {
                 FROM
                     {company_users} cu
                     JOIN {role_assignments} ra ON cu.userid = ra.userid
-                    LEFT JOIN mdl_user u ON ra.userid = u.id
-                    LEFT JOIN mdl_role r ON ra.roleid = r.id
+                    LEFT JOIN {user} u ON ra.userid = u.id
+                    LEFT JOIN {role} r ON ra.roleid = r.id
                     LEFT JOIN {company} c ON cu.companyid = c.id
                 WHERE
                     r.shortname = 'schooladmin'
