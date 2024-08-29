@@ -581,7 +581,6 @@ class helper {
     
     public function get_assigned_school_students_for_course($courseid, $schoolid) {
         global $DB;
-        return [];
         $records = $DB->get_records('company_course', ['courseid' => $courseid], '', 'companyid');
         return array_keys($records);
     }
