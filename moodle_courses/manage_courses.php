@@ -7,8 +7,7 @@ require_login();
 initialize_page();
 echo $OUTPUT->header();
 $helper = new \theme_academi\helper();
-$coursescategory = $helper->get_top_level_category_by_name('Courses');
-$courses = $helper->get_courses_list_by_category_id($coursescategory->id);
+$courses = $helper->get_courses_list_by_top_level_category('Courses');
 echo display_page($courses, $coursescategory);
 echo $OUTPUT->footer();
 

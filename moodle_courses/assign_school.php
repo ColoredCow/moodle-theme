@@ -13,10 +13,14 @@ if (!has_capability('local/moodle_survey:assign-course-to-school', context_syste
 echo display_page($courseid);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $helper = new \theme_academi\helper();
+    $course = $helper->get_course_by_id($courseid);
     $schooltoassign = $_POST['schools'];
     $alreadyassignedschoolsids = $helper->get_assigned_schools_for_course($courseid);
 
     foreach ($schooltoassign as $schoolid) {
+        $company = new company($schoolid);
+        $departmentid = $helper->get_department_for_school($schoolid)->id;
+        $company->add_course($course, $departmentid);
         $existingmapping = $helper->get_mapping_for_school_course($schoolid, $courseid);
         
         if ($existingmapping) {
@@ -29,12 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $alreadyassignedschoolsids = array_values($alreadyassignedschoolsids);
             continue;
         }
-
-        $schoolcourse = new stdClass();
-        $schoolcourse->courseid = $courseid;
-        $schoolcourse->companyid = $schoolid;
-        $schoolcourse->departmentid = $helper->get_department_for_school($schoolid)->id;
-        $helper->assign_course_to_school($schoolcourse);
     }
     $helper->unassign_course_from_school($alreadyassignedschoolsids, $courseid);
     redirect(new moodle_url('/theme/academi/moodle_courses/manage_courses.php'));

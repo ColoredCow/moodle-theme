@@ -227,6 +227,18 @@ class helper {
        
         return $DB->get_records('course', ['category' => $categoryid]); 
     }
+    
+    public function get_courses_list_by_top_level_category($categoryname) {
+        global $DB;
+        $toplevelcategory = $this->get_top_level_category_by_name($categoryname);
+        $sql = "SELECT c.* FROM {course} as c 
+            JOIN {course_categories} as cc
+            ON c.category = cc.id
+            WHERE parent = :parentid
+        ";
+       
+         return $DB->get_records_sql($sql, ['parentid' => $toplevelcategory->id]);
+    }
 
     public function get_school_list($filters) {
         global $DB;
