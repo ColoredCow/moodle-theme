@@ -4,6 +4,8 @@
     $createurl = new \moodle_url('/course/edit.php', ['category'=>$mooccategory->id]);
     $createsurveycategoryurl = '#';
     $createmoocscategoryurl = '#';
+    $status = '';
+    $moocscategory = '';
     $iconurl = new \moodle_url('/local/moodle_survey/pix/plus-icon.svg');
     $createbutton = html_writer::div(
         html_writer::link(
