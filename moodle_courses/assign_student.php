@@ -12,6 +12,7 @@ if (!has_capability('local/moodle_survey:assign-course-to-user', context_system:
 }
 echo display_page($courseid);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    global $USER;
     $helper = new \theme_academi\helper();
     $gradestoassign = $_POST['studentgrades'] ?? [];
     $schoolid = $_POST['schoolid'];
@@ -30,30 +31,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $enrol = $helper->get_or_create_course_enrol($courseid);
+    $existingenrollments = $helper->get_user_enrollment_ids($enrol->id);
+    $eligiblestudents = $helper->get_students_eligible_for_course($courseid, $schoolid, $gradestoassign);
 
-    // $eligiblestudents = $helper->get_students_eligible_for_course($courseid, $schoolid, $gradestoassign);
+    foreach ($eligiblestudents as $user) {
+        $existingentry = $helper->get_user_enrol($user->user_id, $enrol->id);
+        if ( $existingentry) {
+            $indextoremove = array_search($user->user_id, $existingenrollments);
+            unset($existingenrollments[$indextoremove]);
+            continue;
+        }
+        $userenrol = new stdClass();
+        $userenrol->status = 0;
+        $userenrol->enrolid = $enrol->id;
+        $userenrol->timestart = time();
+        $userenrol->userid = $user->user_id;
+        $userenrol->modifierid = $USER->id;
+        $helper->create_user_enrol($userenrol);
+    }
 
-    // foreach ($schooltoassign as $schoolid) {
-    //     $existingmapping = $helper->get_mapping_for_school_course($schoolid, $courseid);
-        
-    //     if ($existingmapping) {
-    //         $indextoremove = array_search($schoolid, $alreadyassignedschoolsids);
-            
-    //         if ($indextoremove !== false) {
-    //             unset($alreadyassignedschoolsids[$indextoremove]);
-    //         }
-            
-    //         $alreadyassignedschoolsids = array_values($alreadyassignedschoolsids);
-    //         continue;
-    //     }
-
-    //     $schoolcourse = new stdClass();
-    //     $schoolcourse->courseid = $courseid;
-    //     $schoolcourse->companyid = $schoolid;
-    //     $schoolcourse->departmentid = $helper->get_department_for_school($schoolid)->id;
-    //     $helper->assign_course_to_school($schoolcourse);
-    // }
-    $helper->unassign_course_from_school($alreadyassignedschoolsids, $courseid);
+    $helper->unenroll_users($enrol->id, $existingenrollments);
     redirect(new moodle_url('/theme/academi/moodle_courses/manage_courses.php'));
 }
 echo $OUTPUT->footer();

@@ -418,6 +418,39 @@ class helper {
         return $DB->insert_record('cc_user_grade', $record);
     }
     
+    public function create_user_enrol($record) {
+        global $DB;
+        return $DB->insert_record('user_enrolments', $record);
+    }
+    
+    public function get_user_enrol($userid, $enrolid) {
+        global $DB;
+        return $DB->get_record('user_enrolments', ['enrolid' => $enrolid, 'userid' => $userid]);
+    }
+    
+    public function get_user_enrollment_ids($enrolid) {
+        global $DB;
+        $records = $DB->get_records('user_enrolments', ['enrolid' => $enrolid], '', 'userid');
+        return array_keys($records);
+    }
+    
+    public function unenroll_users($enrolid, $useridlist) {
+        global $DB;
+    
+        if (empty($useridlist)) {
+            return;
+        }
+    
+        // Prepare the SQL IN clause for the user IDs.
+        list($insql, $params) = $DB->get_in_or_equal($useridlist, SQL_PARAMS_NAMED, 'userid');
+    
+        // Add the enrolment ID to the parameters.
+        $params['enrolid'] = $enrolid;
+    
+        // Delete records matching the enrolment ID and user IDs.
+        $DB->delete_records_select('user_enrolments', "enrolid = :enrolid AND userid $insql", $params);
+    }
+
     public function get_or_create_course_enrol($courseid) {
         global $DB;
         $enrol = $DB->get_record('enrol', ['courseid' => $courseid]);
@@ -438,22 +471,37 @@ class helper {
     public function get_students_eligible_for_course($courseid, $schoolid, $gradestoassign) {
         global $DB;
         $studentrole = $DB->get_record('role', ['shortname' => "student"]);
-        $sql = "SELECT * FROM {users} as u
+        $systemcontextid = \context_system::instance()->id;
+        // Convert the grades array to a comma-separated list
+        list($insql, $inparams) = $DB->get_in_or_equal($gradestoassign, SQL_PARAMS_NAMED, 'grade');
+    
+        $sql = "SELECT ug.* FROM {user} as u
             JOIN {company_users} as cu
             ON cu.userid = u.id
             JOIN {role_assignments} as ra
             ON ra.userid = u.id
-            JOIN {cc_user_grades} as ug
+            AND ra.contextid = :contextid
+            JOIN {cc_user_grade} as ug
             ON ug.user_id = u.id
             WHERE cu.companyid = :schoolid
-            AND ra.roleid = :roleid
+            AND ra.roleid = :roleid;
         ";
-        $queryParams = [
+        $queryParams = array_merge($inparams, [
             'schoolid' => $schoolid,
             'roleid' => $studentrole->id,
-        ];
+            'contextid' => $systemcontextid
+        ]);
 
-        return $DB->get_records_sql($sql, $queryParams);
+        $users = $DB->get_records_sql($sql, $queryParams);
+
+        foreach($users as $index => $user) {
+            $grade = json_decode($user->user_grade);
+            $commonelements = array_intersect($grade, $gradestoassign);
+            if (empty($commonelements)) {
+                unset($users[$index]);
+            }
+        }
+        return array_values($users);
     }
 
     public function create_school_course_grade($record) {
