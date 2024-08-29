@@ -55,7 +55,7 @@ switch ($navstyle) {
 
 $templatecontext = [
     "logourl" => $logourl,
-    "navbarclass" => $navbarclass,
+    // "navbarclass" => $navbarclass,
     "themestyleheader" => $themestyleheader,
     'showsitename' => $showsitename,
     'showlogo' => $showlogo,
