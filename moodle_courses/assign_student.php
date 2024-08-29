@@ -29,7 +29,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $helper->update_school_course_grade($coursegrade);
     }
 
+    $enrol = $helper->get_or_create_course_enrol($courseid);
 
+    // $eligiblestudents = $helper->get_students_eligible_for_course($courseid, $schoolid, $gradestoassign);
 
     // foreach ($schooltoassign as $schoolid) {
     //     $existingmapping = $helper->get_mapping_for_school_course($schoolid, $courseid);

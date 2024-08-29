@@ -418,6 +418,44 @@ class helper {
         return $DB->insert_record('cc_user_grade', $record);
     }
     
+    public function get_or_create_course_enrol($courseid) {
+        global $DB;
+        $enrol = $DB->get_record('enrol', ['courseid' => $courseid]);
+        $studentrole = $DB->get_record('role', ['shortname' => "student"]);
+        if(!$enrol) {
+            $record = new \stdClass();
+            $record->enrol = "manual";
+            $record->status = 0;
+            $record->courseid = $courseid;
+            $record->roleid = $studentrole->id;
+            $record->enrolstartdate = time();
+            $DB->insert_record('enrol', $record);
+        }
+
+        return $enrol = $DB->get_record('enrol', ['courseid' => $courseid]);
+    }
+
+    public function get_students_eligible_for_course($courseid, $schoolid, $gradestoassign) {
+        global $DB;
+        $studentrole = $DB->get_record('role', ['shortname' => "student"]);
+        $sql = "SELECT * FROM {users} as u
+            JOIN {company_users} as cu
+            ON cu.userid = u.id
+            JOIN {role_assignments} as ra
+            ON ra.userid = u.id
+            JOIN {cc_user_grades} as ug
+            ON ug.user_id = u.id
+            WHERE cu.companyid = :schoolid
+            AND ra.roleid = :roleid
+        ";
+        $queryParams = [
+            'schoolid' => $schoolid,
+            'roleid' => $studentrole->id,
+        ];
+
+        return $DB->get_records_sql($sql, $queryParams);
+    }
+
     public function create_school_course_grade($record) {
         global $DB;
         $record->created_at = date('Y-m-d H:i:s');
@@ -473,7 +511,6 @@ class helper {
     }
 
     public function create_course_categories($categoryid, $categoryname) {
-        global $DB;
         $data = new \stdClass();
         $data->name = $categoryname;
         $data->description = '';
