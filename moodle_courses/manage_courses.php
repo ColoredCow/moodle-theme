@@ -7,8 +7,9 @@ require_login();
 initialize_page();
 echo $OUTPUT->header();
 $helper = new \theme_academi\helper();
-$courses = $helper->get_courses_list_by_top_level_category('Courses');
-echo display_page($courses, $coursescategory);
+$filters = get_filters();
+$courses = $helper->get_courses_list_by_top_level_category('Courses', $filters);
+echo display_page($courses, $filters);
 echo $OUTPUT->footer();
 
 /**
@@ -23,8 +24,20 @@ function initialize_page() {
     $PAGE->set_title(get_string('courses', 'theme_academi'));
 }
 
+function get_filters() {
+    $search = optional_param('search', '', PARAM_RAW_TRIMMED);
+    $surveycategory = optional_param('category', '', PARAM_ALPHANUMEXT);
+    $createdon = optional_param('createdon', '', PARAM_RAW_TRIMMED);
 
-function display_page($courses, $coursescategory) {
+    return [
+        'search' => $search,
+        'surveycategory' => $surveycategory,
+        'createdon' => $createdon,
+    ];
+}
+
+
+function display_page($courses, $filters) {
     global $OUTPUT;
 
     // Include the HTML for the survey management interface

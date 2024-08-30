@@ -5,8 +5,6 @@
     $createurl = new \moodle_url('/course/edit.php', ['category'=>$coursescategory->id]);
     $coursecategory = $helper->get_top_level_category_by_name('Courses');
     $createcoursecategoryurl = new moodle_url('/theme/academi/moodle_courses/create_category.php', ['categoryid' => $coursecategory->id]);
-    $moocscategory = [];
-    $search = null;
     $createmoocscategoryurl = '#';
     $iconurl = new \moodle_url('/local/moodle_survey/pix/plus-icon.svg');
     $createbutton = html_writer::div(
@@ -26,7 +24,7 @@
     $content = $heading . ' ' . $createbutton;
     echo html_writer::tag('div', $content, ['class' => 'survey-header']);
 
-    echo generate_filter_form($status, $moocscategory, $search);
+    echo generate_filter_form($coursecategory, $filters);
     echo choose_categories_modal($createcoursecategoryurl, $iconurl);
 
     echo generate_form_submission_script();
@@ -58,17 +56,15 @@
         ");
     }
 
-    function generate_filter_form($status, $moocscategory, $search) {
+    function generate_filter_form($coursecategory, $filters) {
         global $PAGE;
         $categoryoptions['all'] = 'Select Category';
-        $moocsstatusoptions['all']  = 'Select Status';
         $html = html_writer::start_tag('form', ['method' => 'get', 'action' => $PAGE->url, 'id' => 'filter-form']);
         $html .= html_writer::start_div('filter-form d-flex justify-content-between');
-        $html .= html_writer::select($moocsstatusoptions, 'status', $status, null, ['class' => 'status-select', 'id' => 'status-select']);
-        $html .= html_writer::empty_tag('input', ['type' => 'date', 'name' => 'createdon', 'placeholder' => get_string('createdat', 'local_moodle_survey'), 'class' => 'date-input']);
-        $html .= html_writer::select($categoryoptions, 'category', $moocscategory, null, ['class' => 'status-select', 'id' => 'category-select']);
+        $html .= html_writer::empty_tag('input', ['type' => 'date', 'name' => 'createdon', 'value' => $filters['createdon'], 'placeholder' => get_string('createdat', 'local_moodle_survey'), 'class' => 'date-input']);
+        $html .= html_writer::select($categoryoptions, 'category', $coursecategory, null, ['class' => 'status-select', 'id' => 'category-select']);
 
-        $html .= html_writer::empty_tag('input', ['type' => 'text', 'name' => 'search', 'value' => $search, 'placeholder' => get_string('search', 'local_moodle_survey'), 'class' => 'search-input']);
+        $html .= html_writer::empty_tag('input', ['type' => 'text', 'name' => 'search', 'value' => $filters['search'], 'placeholder' => get_string('search', 'local_moodle_survey'), 'class' => 'search-input']);
 
         $html .= html_writer::end_div();
         $html .= html_writer::end_tag('form');
