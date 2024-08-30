@@ -45,3 +45,15 @@
 #header .editmode-switch-form .custom-control .custom-control-input~.custom-control-label:before {
     border: 1px solid tomato !important;
 }
+
+#usernavigation .popover-region-notifications {
+    display: none !important;
+}
+
+#usernavigation [data-region="popover-region-messages"] {
+    display: none !important;
+}
+
+.login-form-forgotpassword {
+    display: none !important;
+}
