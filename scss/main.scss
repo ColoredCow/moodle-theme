@@ -41,3 +41,7 @@
     text-decoration: none !important;
     color: tomato !important;
 }
+
+#header .editmode-switch-form .custom-control .custom-control-input~.custom-control-label:before {
+    border: 1px solid tomato !important;
+}
