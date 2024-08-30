@@ -213,7 +213,7 @@ class helper {
 
     public function get_top_level_category_by_name($name) {
         global $DB;
-       
+        
         return $DB->get_record('course_categories', ['name' => $name, 'parent' => 0]);       
     }
 
@@ -228,7 +228,7 @@ class helper {
         return $DB->get_records('course', ['category' => $categoryid]); 
     }
 
-    public function get_courses_list_by_user() {
+    public function get_courses_list_by_user($filters) {
         global $DB, $USER;
         $sql = "SELECT
                     c.*
@@ -237,18 +237,38 @@ class helper {
                     LEFT JOIN {enrol} e ON e.id = ue.enrolid
                     LEFT JOIN {course} c ON c.id = e.courseid
                     WHERE ue.userid = :userid";
+        
+        foreach ($filters as $key => $value) {
+            switch ($key) {
+                case 'search':
+                    if (!empty($value)) {
+                        $sql .= " AND c.fullname LIKE :search";
+                        $params['search'] = "%$value%";
+                    }
+                    continue;
+
+                case 'createdon':
+                    if (!empty($value)) {
+                        $dateObject = new \DateTime($value);
+                        $formattedDate = $dateObject->format('Y-m-d');
+                        $sql .= " AND DATE(FROM_UNIXTIME(c.timecreated)) = :timecreated";
+                        $params['timecreated'] = $formattedDate;
+                    }
+                    continue;
+            }
+        }
 
         $params['userid'] = $USER->id;
 
         return $DB->get_records_sql($sql, $params);
     }
     
-    public function get_courses_list_by_top_level_category($categoryname) {
+    public function get_courses_list_by_top_level_category($categoryname, $filters) {
         global $DB;
         $toplevelcategory = $this->get_top_level_category_by_name($categoryname);
 
         if(is_student()){
-            return self::get_courses_list_by_user();
+            return self::get_courses_list_by_user($filters);
         }
 
         $sql = "SELECT c.* FROM {course} as c 
@@ -257,7 +277,29 @@ class helper {
             WHERE parent = :parentid
         ";
 
-        return $DB->get_records_sql($sql, ['parentid' => $toplevelcategory->id]);
+        $params['parentid'] = $toplevelcategory->id;
+
+        foreach ($filters as $key => $value) {
+            switch ($key) {
+                case 'search':
+                    if (!empty($value)) {
+                        $sql .= " AND fullname LIKE :search";
+                        $params['search'] = "%$value%";
+                    }
+                    continue;
+
+                case 'createdon':
+                    if (!empty($value)) {
+                        $dateObject = new \DateTime($value);
+                        $formattedDate = $dateObject->format('Y-m-d');
+                        $sql .= " AND DATE(FROM_UNIXTIME(timecreated)) = :timecreated";
+                        $params['timecreated'] = $formattedDate;
+                    }
+                    continue;
+            }
+        }
+
+        return $DB->get_records_sql($sql, $params);
     }
 
     public function get_school_list($filters) {

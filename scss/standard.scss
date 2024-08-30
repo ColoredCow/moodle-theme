@@ -1899,3 +1899,9 @@ select {
 .categories-link {
     margin-bottom: 40px;
 }
+
+@media (min-width: 768px) {
+    .secondary-navigation .navigation {
+        margin-top: 23px !important;
+    }
+}
