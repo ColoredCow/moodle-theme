@@ -19,17 +19,24 @@ $headers = array_merge($headers, [
 $table->head = $headers;
 
 foreach ($courses as $course) {
-    $editurl = new moodle_url('/course/edit.php', ['id' => $course->id]);
+    $editsettingurl = new moodle_url('/course/edit.php', ['id' => $course->id]);
+    $editcourseurl = new moodle_url('/course/view.php', ['id' => $course->id]);
     $assignurl = new moodle_url('/theme/academi/moodle_courses/assign_school.php', ['course' => $course->id]);
-    $coursename = html_writer::link($editurl, $course->fullname);
+    $coursename = html_writer::link($editsettingurl, $course->fullname);
     $assignbutton = '';
     if (has_capability('local/moodle_survey:assign-course-to-school', context_system::instance())) {
         $assignbutton = html_writer::div(
             html_writer::link(
+                $editcourseurl,
+                'Edit',
+                array('class' => 'mr-2 px-3 assign-school-button')
+            )
+            . ' ' . 
+            html_writer::link(
                 $assignurl,
                 'Assign Schools',
                 array('class' => 'mr-2 assign-school-button')
-            )
+            ) 
         );
     } else if (has_capability('local/moodle_survey:assign-course-to-user', context_system::instance())) {
         $assignurl = new moodle_url('/theme/academi/moodle_courses/assign_student.php', ['course' => $course->id]);

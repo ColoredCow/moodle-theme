@@ -7,19 +7,22 @@
     $createcoursecategoryurl = new moodle_url('/theme/academi/moodle_courses/create_category.php', ['categoryid' => $coursecategory->id]);
     $createmoocscategoryurl = '#';
     $iconurl = new \moodle_url('/local/moodle_survey/pix/plus-icon.svg');
-    $createbutton = html_writer::div(
-        html_writer::link(
-            $createcoursecategoryurl,
-            'Course categories',
-            array('class' => 'create-button')
-        ) .
-        html_writer::link(
-            $createurl,
-            html_writer::tag('img', '', array('src' => $iconurl, 'alt' => 'Icon', 'class' => 'plus-icon')) . ' ' . 'Create new Course',
-            array('class' => 'create-button', 'id' => 'open-modal')
-        ),
-        'create-button-container'
-    );
+    $createbutton = '';
+    if (has_capability('local/moodle_survey:assign-course-to-school', context_system::instance())) {
+        $createbutton = html_writer::div(
+            html_writer::link(
+                $createcoursecategoryurl,
+                'Course categories',
+                array('class' => 'create-button')
+            ) .
+            html_writer::link(
+                $createurl,
+                html_writer::tag('img', '', array('src' => $iconurl, 'alt' => 'Icon', 'class' => 'plus-icon')) . ' ' . 'Create new Course',
+                array('class' => 'create-button', 'id' => 'open-modal')
+            ),
+            'create-button-container'
+        );
+    }
     $heading = html_writer::tag('span', 'Courses', ['class' => 'page-title']);
     $content = $heading . ' ' . $createbutton;
     echo html_writer::tag('div', $content, ['class' => 'survey-header']);

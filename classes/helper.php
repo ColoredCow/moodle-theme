@@ -344,8 +344,26 @@ class helper {
 
     public function get_assignees_count_for_course($course) {
         global $DB;
+        $params = [
+            'courseid' => $course->id
+        ];
+        
+        if (is_sel_admin()) {
+            $sql = "SELECT count(ue.id) as total FROM {enrol} as enrol
+                JOIN {user_enrolments} as ue ON ue.enrolid = enrol.id
+                WHERE enrol.courseid = :courseid
+            ";
+        } else {
+            $params['schoolid'] = get_user_school()->companyid;
+            $sql = "SELECT count(ue.id) as total FROM {enrol} as enrol
+                JOIN {user_enrolments} as ue ON ue.enrolid = enrol.id
+                JOIN {company_users} as cu ON cu.userid = ue.userid
+                WHERE enrol.courseid = :courseid
+                AND cu.companyid = :schoolid
+            ";
+        }
 
-        return 200;
+        return $DB->get_field_sql($sql, $params);
     }
     
     public function get_schools_count_for_course($course) {
