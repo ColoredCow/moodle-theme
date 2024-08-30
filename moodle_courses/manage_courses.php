@@ -9,7 +9,8 @@ echo $OUTPUT->header();
 $helper = new \theme_academi\helper();
 $filters = get_filters();
 $courses = $helper->get_courses_list_by_top_level_category('Courses', $filters);
-echo display_page($courses, $filters);
+$categories = $helper->get_all_course_categories(null);
+echo display_page($courses, $filters, $categories);
 echo $OUTPUT->footer();
 
 /**
@@ -37,7 +38,7 @@ function get_filters() {
 }
 
 
-function display_page($courses, $filters) {
+function display_page($courses, $filters, $categories) {
     global $OUTPUT;
 
     // Include the HTML for the survey management interface

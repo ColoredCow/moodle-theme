@@ -1,5 +1,4 @@
 <?php
-    $categories = [];
     $moocsstatusoptions = [];
     $helper = new \theme_academi\helper();
     $createurl = new \moodle_url('/course/edit.php', ['category'=>$coursescategory->id]);
@@ -27,7 +26,7 @@
     $content = $heading . ' ' . $createbutton;
     echo html_writer::tag('div', $content, ['class' => 'survey-header']);
 
-    echo generate_filter_form($coursecategory, $filters);
+    echo generate_filter_form($categories, $filters);
     echo choose_categories_modal($createcoursecategoryurl, $iconurl);
 
     echo generate_form_submission_script();
@@ -59,13 +58,16 @@
         ");
     }
 
-    function generate_filter_form($coursecategory, $filters) {
+    function generate_filter_form($categories, $filters) {
         global $PAGE;
-        $categoryoptions['all'] = 'Select Category';
+        $coursecategories['all'] = 'Select Category';
+        foreach ($categories as $category) {
+            $coursecategories[$category->id] = $category->name;
+        }
         $html = html_writer::start_tag('form', ['method' => 'get', 'action' => $PAGE->url, 'id' => 'filter-form']);
         $html .= html_writer::start_div('filter-form d-flex justify-content-between');
         $html .= html_writer::empty_tag('input', ['type' => 'date', 'name' => 'createdon', 'value' => $filters['createdon'], 'placeholder' => get_string('createdat', 'local_moodle_survey'), 'class' => 'date-input']);
-        $html .= html_writer::select($categoryoptions, 'category', $coursecategory, null, ['class' => 'status-select', 'id' => 'category-select']);
+        $html .= html_writer::select($coursecategories, 'category', null, null, ['class' => 'status-select', 'id' => 'category-select']);
 
         $html .= html_writer::empty_tag('input', ['type' => 'text', 'name' => 'search', 'value' => $filters['search'], 'placeholder' => get_string('search', 'local_moodle_survey'), 'class' => 'search-input']);
 
