@@ -122,12 +122,12 @@
         padding-top: 10px;
         padding-bottom: 10px;
     }
-    #page-header, .secondary-navigation {
-        display: none !important;
-    }
     #fitem_id_category {
         display: none !important;
     }
+}
+.secondary-navigation [data-key="participants"]{
+    display: none !important;
 }
 
 /* .path-grade-report-grader.hasstickyfooter .gradeparent tr.lastrow {
