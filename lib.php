@@ -58,6 +58,26 @@ define('LOGOANDSITENAME', 2);
 function theme_academi_page_init(moodle_page $page) {
     global $CFG;
     $page->requires->js_call_amd('theme_academi/theme', 'init');
+    theme_academi_remove_custom_menu_items_from_login($page);
+}
+
+function theme_academi_remove_custom_menu_items_from_login($page) {
+    global $CFG;
+
+    $currenturl = $_SERVER['REQUEST_URI'];
+    if (strpos($currenturl, '/login/index.php') !== false) {
+        $page->requires->js_init_code("
+            document.addEventListener('DOMContentLoaded', function() {
+                var homeNavItem = document.querySelector('li[data-key=\"home\"]');
+                if (homeNavItem) {
+                    homeNavItem.remove();
+                }
+            });
+        ");
+        return $CFG->custommenuitems  = '';
+    }
+
+    return $CFG->custommenuitems;
 }
 
 /**
