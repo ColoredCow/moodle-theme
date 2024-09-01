@@ -101,7 +101,7 @@ function get_students_data($tab, $users, $helper) {
                 $student->idnumber,
                 $grade,
                 '-',
-                '-'
+                $helper->get_assigned_course_count($student->id)
             ];
         }
         if(!empty($students)){

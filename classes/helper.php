@@ -262,6 +262,19 @@ class helper {
 
         return $DB->get_records_sql($sql, $params);
     }
+
+    public function get_assigned_course_count($userid) {
+        global $DB;
+        $sql = "SELECT 
+                COUNT(*) FROM 
+                {user_enrolments} ue 
+                LEFT JOIN {enrol} e ON e.id = ue.enrolid 
+                LEFT JOIN {course} c ON c.id = e.courseid 
+                WHERE ue.userid = :userid";
+
+        $params['userid'] = $userid;
+        return $DB->count_records_sql($sql, $params);
+    }
     
     public function get_courses_list_by_top_level_category($categoryname, $filters) {
         global $DB;
