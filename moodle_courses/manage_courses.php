@@ -27,12 +27,12 @@ function initialize_page() {
 
 function get_filters() {
     $search = optional_param('search', '', PARAM_RAW_TRIMMED);
-    $surveycategory = optional_param('category', '', PARAM_ALPHANUMEXT);
+    $coursecategoryid = optional_param('categoryid', '', PARAM_ALPHANUMEXT);
     $createdon = optional_param('createdon', '', PARAM_RAW_TRIMMED);
 
     return [
         'search' => $search,
-        'surveycategory' => $surveycategory,
+        'categoryid' => $coursecategoryid,
         'createdon' => $createdon,
     ];
 }

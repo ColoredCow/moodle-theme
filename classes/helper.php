@@ -309,6 +309,13 @@ class helper {
                         $params['timecreated'] = $formattedDate;
                     }
                     continue;
+                
+                case 'categoryid':
+                    if (!empty($value) && $value !== 'all') {
+                        $sql .= " AND cc.id = :categoryid";
+                        $params['categoryid'] = $value;
+                    }
+                    continue;
             }
         }
 
