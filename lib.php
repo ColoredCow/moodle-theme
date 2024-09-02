@@ -74,7 +74,37 @@ function theme_academi_remove_custom_menu_items_from_login($page) {
                 }
             });
         ");
-        return $CFG->custommenuitems  = '';
+        $CFG->custommenuitems = '';
+        return $CFG->custommenuitems;
+    }
+
+    $menuitems = explode("\n", $CFG->custommenuitems);
+    $removals = [];
+
+    if (is_school_admin() || is_counsellor() || is_teacher()) {
+        $removals[] = 'Schools|';
+    }
+
+    if (is_student()) {
+        $removals[] = 'Users|';
+        $removals[] = 'Schools|';
+    }
+
+    if (is_principal()) {
+        $removals[] = 'Schools|';
+        $removals[] = 'Courses|';
+    }
+
+    if (!empty($removals)) {
+        $filtereditems = array_filter($menuitems, function($item) use ($removals) {
+            foreach ($removals as $removal) {
+                if (strpos($item, $removal) !== false) {
+                    return false;
+                }
+            }
+            return true;
+        });
+        $CFG->custommenuitems = implode("\n", $filtereditems);
     }
 
     return $CFG->custommenuitems;
