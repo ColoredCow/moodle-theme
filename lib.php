@@ -81,8 +81,14 @@ function theme_academi_remove_custom_menu_items_from_login($page) {
     $menuitems = explode("\n", $CFG->custommenuitems);
     $removals = [];
 
-    if (is_school_admin() || is_counsellor() || is_teacher()) {
+    if (is_counsellor() || is_teacher()) {
         $removals[] = 'Schools|';
+    }
+
+    if(is_school_admin()) {
+        $removals[] = 'Schools|';
+        $removals[] = 'Courses|';
+        $removals[] = 'Surveys|';
     }
 
     if (is_student()) {
