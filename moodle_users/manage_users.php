@@ -82,6 +82,7 @@ function get_students_data($tab, $users, $helper) {
     $context = context_system::instance();
     $students = [];
     $tabledata = [];
+    $tablehead = get_string('studenttablehead', 'theme_academi');
     echo html_writer::start_div($tab === 'student' ? 'active' : '', ['id' => 'student']);
         foreach ($users as $user) {
             if ($user->rolename === 'student') {
@@ -104,8 +105,14 @@ function get_students_data($tab, $users, $helper) {
                 $helper->get_assigned_course_count($student->id)
             ];
         }
+        if (is_school_admin()) {
+            unset($tablehead[3]);
+        
+            foreach ($tabledata as &$data) {
+                unset($data[3]);
+            }
+        }
         if(!empty($students)){
-            $tablehead = get_string('studenttablehead', 'theme_academi');
             include(__DIR__ . '/templates/manage_users_table.php');
         } else {
             echo html_writer::tag('div', 'No Data Found.', ['class' => 'alert alert-info']);
@@ -117,6 +124,7 @@ function get_teachers_data($tab, $users, $helper) {
     $context = context_system::instance();
     $teachers = [];
     $tabledata = [];
+    $tablehead = get_string('teachertablehead', 'theme_academi');
     echo html_writer::start_div($tab === 'teacher' ? 'active' : '', ['id' => 'teacher']);
         foreach ($users as $user) {
             if ($user->rolename === 'teacher') {
@@ -139,8 +147,15 @@ function get_teachers_data($tab, $users, $helper) {
                 '-'
             ];
         }
+
+        if (is_school_admin()) {
+            unset($tablehead[3]);
+        
+            foreach ($tabledata as &$data) {
+                unset($data[3]);
+            }
+        }
         if(!empty($teachers)){
-            $tablehead = get_string('teachertablehead', 'theme_academi');
             include(__DIR__ . '/templates/manage_users_table.php');
         } else {
             echo html_writer::tag('div', 'No Data Found.', ['class' => 'alert alert-info']);
@@ -213,7 +228,7 @@ function get_school_admins_data($tab, $users) {
     $context = context_system::instance();
     $tabledata = [];
     echo html_writer::start_div($tab === 'school_admin' ? 'active' : '', ['id' => 'school_admin']);
-   
+
     foreach($users as $schooladmin) {
         $name = $schooladmin->firstname . ' ' . $schooladmin->lastname; {
             if (has_capability('local/moodle_survey:create-school-admin', $context)) {
