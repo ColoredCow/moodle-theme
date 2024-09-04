@@ -267,7 +267,7 @@ class course_renderer extends \core_course_renderer {
             );
         }
     
-        $modalheader = html_writer::start_tag('div', ['class'=>"d-flex justify-content-between align-items-center mb-3"]);
+        $modalheader = html_writer::start_tag('div', ['class'=>"d-flex justify-content-between align-items-center modal-content-section"]);
         $modalheader .= html_writer::tag('h5', $modallabel, ['class' => 'modal-title']);
         $modalheader .= html_writer::tag('span', '&times;', ['class' => 'close-modal']);
         $modalheader .= html_writer::end_tag('div');
