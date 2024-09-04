@@ -203,9 +203,7 @@ class course_renderer extends \core_course_renderer {
         $context = \context_system::instance();
         $template = ['quickaction'=> has_capability('local/moodle_survey:view-quick-access-buttons', $context)];
         $template['createnewschool'] = new moodle_url('/blocks/iomad_company_admin/company_edit_form.php', ['createnew' => 1]);
-        $helper = new \theme_academi\helper();
-        $coursescategory = $helper->get_top_level_category_by_name('Courses');
-        $template['createnewcourseurl'] = new \moodle_url('/course/edit.php', ['category'=>$coursescategory->id]);
+        $template['course_modal_section'] = $this->create_course_modal_section();
         $template['cancreatenewschool'] = has_capability('local/moodle_survey:create-school', $context);
         $template['cancreatenewcourse'] = has_capability('local/moodle_survey:create-courses', $context);
         $template['cancreatenewsurvey'] = has_capability('local/moodle_survey:create-surveys', $context);
@@ -213,6 +211,77 @@ class course_renderer extends \core_course_renderer {
         $template['plusicon'] = '<img src="' . new moodle_url('/theme/academi/pix/plus-icon.svg') . '" alt="Plus Icon" class="plus-icon" />';
 
         return $this->output->render_from_template("theme_academi/course_blocks", $template);
+    }
+
+    public function create_course_modal_section() {
+        $helper = new \theme_academi\helper();
+        $coursecategory = $helper->get_top_level_category_by_name('Courses');
+        $createcoursecategoryurl = new moodle_url('/theme/academi/moodle_courses/create_category.php', ['categoryid' => $coursecategory->id]);
+        $categoryid = $coursecategory->id;
+        $categories = $helper->get_categories_by_parent_id($categoryid);
+        $plusicon = new \moodle_url('/local/moodle_survey/pix/plus-icon.svg');
+        $modallabel = get_string('choosecoursecategories', 'theme_academi');
+    
+        $modalcontent = '';
+        if (!empty($categories)) {
+            $form = html_writer::start_tag('form', [
+                'method' => 'get',
+                'action' => new moodle_url('/course/edit.php'),
+                'class'  => 'category-selection-form',
+            ]);
+    
+            $select = html_writer::start_tag('div', ['class' => 'form-group']);
+            $select .= html_writer::tag('label', 'Select Category:', ['for' => 'category-select']);
+            $select .= html_writer::start_tag('select', [
+                'name'     => 'category',
+                'id'       => 'category-select',
+                'class'    => 'form-control',
+                'required' => true,
+            ]);
+    
+            foreach ($categories as $category) {
+                $select .= html_writer::tag('option', format_string($category->name), ['value' => $category->id]);
+            }
+    
+            $select .= html_writer::end_tag('select');
+            $select .= html_writer::end_tag('div');
+    
+            $button = html_writer::tag('button', 'Next', [
+                'type'  => 'submit',
+                'class' => 'btn btn-primary',
+            ]);
+    
+            $form .= $select . $button;
+            $form .= html_writer::end_tag('form');
+    
+            $modalcontent .= html_writer::div($form, 'modal-description');
+        } else {
+            $modalcontent .= html_writer::tag('div', get_string('createcoursecategorycontent', 'theme_academi'), ['class' => 'alert alert-info']);
+            $modalcontent .= html_writer::div(
+                html_writer::link(
+                    $createcoursecategoryurl,
+                    html_writer::tag('img', '', ['src' => $plusicon, 'alt' => 'Icon', 'class' => 'plus-icon']) . ' ' . 'Create Course Categories',
+                    ['class' => 'create-button text-align-center']
+                ),
+                'd-flex justify-content-center'
+            );
+        }
+    
+        $modalheader = html_writer::start_tag('div', ['class'=>"d-flex justify-content-between align-items-center mb-3"]);
+        $modalheader .= html_writer::tag('h5', $modallabel, ['class' => 'modal-title']);
+        $modalheader .= html_writer::tag('span', '&times;', ['class' => 'close-modal']);
+        $modalheader .= html_writer::end_tag('div');
+
+        $modalhtml = html_writer::start_tag('div', ['id' => 'create-course-modal', 'class' => 'modal', 'style' => 'display:none;']);
+        $modalhtml .= html_writer::start_tag('div', ['class' => 'modal-content']);
+        $modalhtml .= $modalheader;
+        $modalhtml .= $modalcontent;
+        $modalhtml .= html_writer::end_tag('div');
+        $modalhtml .= html_writer::end_tag('div');
+
+        $modalhtml .= $this->render_modal_dyanamic_scripting();
+    
+        return $modalhtml;
     }
 
     public function frontpage_insights($survey, $rolescontextlist) {
@@ -455,6 +524,41 @@ class course_renderer extends \core_course_renderer {
         HTML;
     
         return $script;
+    }
+
+    public function render_modal_dyanamic_scripting() {
+        $modalscript = html_writer::script("
+            document.addEventListener('DOMContentLoaded', function() {
+                var modal = document.getElementById('create-course-modal');
+                var openModalBtn = document.getElementById('open-modal');
+                var closeModalBtn = document.querySelector('.close-modal');
+
+                if (openModalBtn) {
+                    openModalBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        if (modal) {
+                            modal.style.display = 'block';
+                        }
+                    });
+                }
+
+                if (closeModalBtn) {
+                    closeModalBtn.addEventListener('click', function() {
+                        if (modal) {
+                            modal.style.display = 'none';
+                        }
+                    });
+                }
+
+                window.addEventListener('click', function(event) {
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            });
+        ");
+
+        return $modalscript;
     }
 
     /**

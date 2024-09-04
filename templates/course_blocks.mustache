@@ -42,7 +42,7 @@
         </div>
         <div class="d-flex mt-3">
             {{#isadmin}}
-            <div class="bg-light border p-3 w-25 rounded">
+            <div class="bg-light border p-3 w-25 mr-3 rounded">
                 <div>Active Schools</div>
                 <div class="">{{totalschoolcount}}</div>
             </div>
@@ -159,10 +159,11 @@
             <a class="create-custom-button mt-3 mr-3" href="{{createnewschool}}">{{{plusicon}}} Add New School</a>
             {{/cancreatenewschool}}
             {{#cancreatenewcourse}}
-            <a class="create-custom-button mt-3 mr-3" href="{{createnewcourseurl}}">{{{plusicon}}} Create new course</a>
+                <a class="create-custom-button mt-3 mr-3" id="open-modal" href="#">{{{plusicon}}} Create new course</a>
+                {{{course_modal_section}}}
             {{/cancreatenewcourse}}
             {{#cancreatenewsurvey}}
-            <a class="create-custom-button mt-3 mr-3" href="{{createsurveyurl}}">{{{plusicon}}} Create new survey</a>
+            <a class="create-custom-button mt-3 mr-3"  href="{{createsurveyurl}}">{{{plusicon}}} Create new survey</a>
             {{/cancreatenewsurvey}}
         </div>
     </div>
