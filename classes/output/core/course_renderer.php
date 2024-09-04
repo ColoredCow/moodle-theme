@@ -148,8 +148,6 @@ class course_renderer extends \core_course_renderer {
         global $CFG, $SITE;
         $output = '';
         $survey = new \local_moodle_survey\model\survey();
-        $audienceaccess = new \local_moodle_survey\model\audience_access();
-        $totalschoolcount = $audienceaccess->get_schools_count();
         $frontpagelayout = ['overview', 'quickaction', 'insights'];
         
         $userrole = get_user_role();
@@ -165,7 +163,7 @@ class course_renderer extends \core_course_renderer {
         foreach ($frontpagelayout as $section) {
             switch($section) {
                 case 'overview':
-                    $output .= $this->frontpage_overview($totalschoolcount, $userroles);
+                    $output .= $this->frontpage_overview($userroles);
                     break;
                 case 'quickaction':
                     $output .= $this->quick_action();
@@ -179,13 +177,15 @@ class course_renderer extends \core_course_renderer {
         return $output;
     }
 
-    public function frontpage_overview($totalschoolcount, $rolescontextlist) {
+    public function frontpage_overview($rolescontextlist) {
         global $USER;
         $survey = new \local_moodle_survey\model\survey();
+        $helper = new \theme_academi\helper();
         $schoolhelper = new \local_moodle_survey\model\school();
-        $surveycount = $survey->get_active_survey_count();
+        $surveycount = sizeof($survey->get_surveys([]));
         $enrolledstudentscount = $schoolhelper->get_enrolled_students_count();
         $enrolledteacherscount = $schoolhelper->get_enrolled_teachers_count();
+        $totalschoolcount = sizeof($helper->get_school_list([]));
         $coursescount = $schoolhelper->get_courses_count();
         $template = ['overview'=> true];
         $template['username'] =  $USER->firstname;
