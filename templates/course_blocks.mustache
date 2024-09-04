@@ -46,24 +46,18 @@
                 <div>Active Schools</div>
                 <div class="">{{totalschoolcount}}</div>
             </div>
-            {{/isadmin}}
-            <div class="bg-light border p-3 w-25 ml-3 rounded">
+
+            <div class="bg-light border p-3 w-25 mr-3 rounded">
                 <div>Enrolled Teachers</div>
                 <div class="">{{enrolledteacherscount}}</div>
             </div>
-            <div class="bg-light border p-3 w-25 ml-3 rounded">
+
+            <div class="bg-light border p-3 w-25 mr-3 rounded">
                 <div>Enrolled Students</div>
                 <div class="">{{enrolledstudentscount}}</div>
             </div>
-            {{#isprincipal}}
-            <div class="bg-light border p-3 w-25 ml-3 rounded">
-                <div>Running Courses</div>
-                <div class="">{{coursescount}}</div>
-            </div>
-            {{/isprincipal}}
 
-            {{#isadmin}}
-            <div class="bg-light border p-3 w-25 ml-3 rounded">
+            <div class="bg-light border p-3 w-25 mr-3 rounded">
                 <div>
                     Active Surveys
                 </div>
@@ -71,14 +65,86 @@
             </div>
             {{/isadmin}}
 
+            {{#iscounsellor}}
+                <div class="bg-light border p-3 w-25 mr-3 rounded">
+                    <div>Enrolled Teachers</div>
+                    <div class="">{{enrolledteacherscount}}</div>
+                </div>
+
+                <div class="bg-light border p-3 w-25 mr-3 rounded">
+                    <div>Enrolled Students</div>
+                    <div class="">{{enrolledstudentscount}}</div>
+                </div>
+
+                <div class="bg-light border p-3 w-25 mr-3 rounded">
+                    <div>Running Courses</div>
+                    <div class="">{{coursescount}}</div>
+                </div>
+
+                <div class="bg-light border p-3 w-25 mr-3 rounded">
+                    <div>
+                        Active Surveys
+                    </div>
+                    <div class="">{{surveycount}}</div>
+                </div>
+            {{/iscounsellor}}
+
+            {{#isschooladmin}}
+                <div class="bg-light border p-3 w-25 mr-3 rounded">
+                    <div>Enrolled Teachers</div>
+                    <div class="">{{enrolledteacherscount}}</div>
+                </div>
+
+                <div class="bg-light border p-3 w-25 mr-3 rounded">
+                    <div>Enrolled Students</div>
+                    <div class="">{{enrolledstudentscount}}</div>
+                </div>
+            {{/isschooladmin}}
+
             {{#isprincipal}}
-            <div class="bg-light border p-3 w-25 ml-3 rounded">
+                <div class="bg-light border p-3 w-25 mr-3 rounded">
+                    <div>Enrolled Teachers</div>
+                    <div class="">{{enrolledteacherscount}}</div>
+                </div>
+
+                <div class="bg-light border p-3 w-25 mr-3 rounded">
+                    <div>Enrolled Students</div>
+                    <div class="">{{enrolledstudentscount}}</div>
+                </div>
+
+                <div class="bg-light border p-3 w-25 mr-3 rounded">
+                    <div>Running Courses</div>
+                    <div class="">{{coursescount}}</div>
+                </div>
+                <div class="bg-light border p-3 w-25 mr-3 rounded">
+                    <div>
+                        Running Surveys
+                    </div>
+                    <div class="">{{surveycount}}</div>
+                </div>
+            {{/isprincipal}}
+
+            {{#isteacher}}
+                <div class="bg-light border p-3 w-25 mr-3 rounded">
+                    <div>Enrolled Students</div>
+                    <div class="">{{enrolledstudentscount}}</div>
+                </div>
+            {{/isteacher}}
+
+            {{#isstudent}}
+            <div class="bg-light border p-3 w-25 mr-3 rounded">
                 <div>
-                    Running Surveys
+                    Assigned Course
+                </div>
+                <div class="">{{coursescount}}</div>
+            </div>
+            <div class="bg-light border p-3 w-25 mr-3 rounded">
+                <div>
+                    Assigned Surveys
                 </div>
                 <div class="">{{surveycount}}</div>
             </div>
-            {{/isprincipal}}
+            {{/isstudent}}
             
         </div>
     </div>

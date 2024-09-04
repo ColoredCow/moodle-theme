@@ -158,7 +158,8 @@ class course_renderer extends \core_course_renderer {
             'isadmin' => $userrole == 'sel_admin',
             'isteacher' => $userrole == 'teacher' ,
             'isstudent' => $userrole == 'student',
-            'isschooladmin' => $userrole == 'schooladmin'
+            'isschooladmin' => $userrole == 'schooladmin',
+            'iscounsellor' => $userrole == 'counsellor'
         ];
 
         foreach ($frontpagelayout as $section) {
