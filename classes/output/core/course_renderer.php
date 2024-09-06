@@ -186,7 +186,7 @@ class course_renderer extends \core_course_renderer {
         $enrolledstudentscount = $schoolhelper->get_enrolled_students_count();
         $enrolledteacherscount = $schoolhelper->get_enrolled_teachers_count();
         $totalschoolcount = sizeof($helper->get_school_list([]));
-        $coursescount = $schoolhelper->get_courses_count();
+        $coursescount = sizeof($helper->get_courses_list_by_top_level_category('Courses', []));
         $template = ['overview'=> true];
         $template['username'] =  $USER->firstname;
         $template['surveycount'] = $surveycount;
