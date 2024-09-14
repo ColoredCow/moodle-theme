@@ -53,6 +53,7 @@ function display_page($usertype) {
 }
 
 function import_users($mform, $usertype) {
+    global $OUTPUT;
     $importid = csv_import_reader::get_new_iid('academi');
     $cir = new csv_import_reader($importid, 'academi');
     $content = $mform->get_file_content('userfile');
@@ -64,9 +65,13 @@ function import_users($mform, $usertype) {
     if (!$iscolumnvalidated) {
         redirect(new moodle_url('/theme/academi/moodle_users/manage_users.php'));
     }
+    $errors = [];
 
     while ($row = $cir->next()) {
-        create_new_user($columns, $row, $usertype);
+        $error = create_new_user($columns, $row, $usertype);
+        if ($error) {
+            $errors[] = $error;
+        }
     }
     $csvloaderror = $cir->get_error();
     unset($content);
@@ -74,7 +79,11 @@ function import_users($mform, $usertype) {
     if (!is_null($csvloaderror)) {
         redirect(new moodle_url('/theme/academi/moodle_users/manage_users.php'));
     }
-    redirect(new moodle_url('/theme/academi/moodle_users/manage_users.php'));
+    if (!empty($errors)) {
+        echo $OUTPUT->notification(implode('<br>', $errors), 'notifyproblem');
+    } else {
+        redirect(new moodle_url('/theme/academi/moodle_users/manage_users.php'));
+    }
 }
 
 function validate_columns($columns) {
@@ -111,6 +120,7 @@ function create_new_user($columns, $row, $usertype) {
         } 
     }
 
+try {
     $userid = $helper->create_user($user);
     $role = $helper->get_role_id_by_name($usertype);
 
@@ -136,4 +146,12 @@ function create_new_user($columns, $row, $usertype) {
     $helper->create_user_grade($usergrade);
 
     $result = $helper->assign_role($userrole);
+    if (!$result) {
+        return "Error assigning role to user: {$user->username}"; 
+    }
+} catch (Exception $e) {
+    return "Error creating user: {$user->username}";
+}
+
+    return null;
 }
