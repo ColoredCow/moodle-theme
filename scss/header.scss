@@ -181,7 +181,8 @@
         &:focus,
         &:active,
         &.active {
-            border-bottom: 5px solid $primary_30;
+            border: none;
+            border-bottom: 5px solid $primary_30 !important;
             background: $white;
             color: $primary_30;
             font-weight: 600;
@@ -403,7 +404,6 @@
             background: $white;
         }
         .nav.navbar-nav {
-            display: flex;
             li.nav-item .popover-region {
                 margin-top: 7px;
             }
@@ -412,6 +412,22 @@
             padding: 5px 15px;
         }
     }
+}
+
+#header {
+    .nav.navbar-nav {
+        display: flex;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .primary-navigation {
+        display:flex !important;
+    }
+}
+
+.dropdown-menu .dropdown-item.active {
+    color: black !important;
 }
 
 .dropdown-toggle::after {
